@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIG — Grid Cards</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,200;14..32,300;14..32,400;14..32,600&display=swap" rel="stylesheet">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #ffffff;
+  color: #111;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.container {
+  max-width: 1200px;
+  width: 100%;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 40px;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 50px;
+}
+
+.logo {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  color: #111;
+}
+
+nav {
+  display: flex;
+  gap: 32px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #888;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+nav a:hover,
+nav a.active {
+  color: #111;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 32px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #eee;
+  transition: background 0.3s ease, border-color 0.3s ease;
+  cursor: default;
+  overflow: hidden;
+}
+
+.card.flash {
+  background: #f0f0f0;
+  border-color: #ddd;
+}
+
+.card-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #f5f5f5;
+  cursor: pointer;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+}
+
+.card-image img.zoomed {
+  transform: scale(1.08);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+}
+
+.card-body {
+  padding: 18px 20px 22px;
+  position: relative;
+  min-height: 78px;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 300;
+  letter-spacing: 0.8px;
+  color: #222;
+  margin-bottom: 4px;
+}
+
+.card-location {
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #999;
+}
+
+.card-detail {
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.3px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.text-stage {
+  position: relative;
+}
+
+.text-stage .text-default,
+.text-stage .text-detail {
+  transition: opacity 0.25s ease, transform 0.3s ease;
+}
+
+.text-stage .text-detail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+}
+
+.card.show-detail .text-default {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.card.show-detail .text-detail {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">BIG</div>
+    <nav>
+      <a href="#" class="active">Architecture</a>
+      <a href="#">Interiors</a>
+      <a href="#">Landscape</a>
+      <a href="#">Planning</a>
+      <a href="#">Products</a>
+    </nav>
+  </header>
+
+  <div class="grid" id="cardGrid"></div>
+</div>
+
+<script>
+const data = [
+  {
+    title: 'STEM University',
+    location: 'BENTONVILLE, UNITED STATES',
+    detail: 'A new STEM campus fostering interdisciplinary research with open laboratories and collaborative learning spaces.',
+    img: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=600&q=80'
+  },
+  {
+    title: 'The Spiral',
+    location: 'NEW YORK, UNITED STATES',
+    detail: 'A terraced skyscraper with a continuous green ribbon climbing its facade creating a vertical neighborhood.',
+    img: 'https://images.unsplash.com/photo-1511818966892-d7d671e672a2?w=600&q=80'
+  },
+  {
+    title: 'CopenHill',
+    location: 'COPENHAGEN, DENMARK',
+    detail: 'A waste-to-energy plant topped with a ski slope, hiking trail and climbing wall for public recreation.',
+    img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80'
+  },
+  {
+    title: 'Superkilen',
+    location: 'COPENHAGEN, DENMARK',
+    detail: 'A vibrant urban park celebrating cultural diversity with objects sourced from over 50 countries.',
+    img: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80'
+  },
+  {
+    title: 'The Twist',
+    location: 'JEVNAKER, NORWAY',
+    detail: 'A twisted museum bridge spanning the Randselva River that rotates 90 degrees between two riverbanks.',
+    img: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=600&q=80'
+  },
+  {
+    title: '8 House',
+    location: 'COPENHAGEN, DENMARK',
+    detail: 'A residential complex shaped like a figure eight allowing residents to bike from ground to penthouse.',
+    img: 'https://images.unsplash.com/photo-1473163928189-364b2c4e1135?w=600&q=80'
+  }
+];
+
+const grid = document.getElementById('cardGrid');
+
+data.forEach((item) => {
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  card.innerHTML = `
+    <div class="card-image">
+      <img src="${item.img}" alt="${item.title}" loading="lazy">
+    </div>
+    <div class="card-body">
+      <div class="text-stage">
+        <div class="text-default">
+          <div class="card-title">${item.title}</div>
+          <div class="card-location">${item.location}</div>
+        </div>
+        <div class="text-detail">${item.detail}</div>
+      </div>
+    </div>
+  `;
+
+  const imgEl = card.querySelector('.card-image img');
+  imgEl.addEventListener('click', function (e) {
+    e.stopPropagation();
+
+    card.classList.add('flash');
+    this.classList.add('zoomed');
+    card.classList.add('show-detail');
+
+    setTimeout(() => {
+      this.classList.remove('zoomed');
+      card.classList.remove('flash');
+      card.classList.remove('show-detail');
+    }, 300);
+  });
+
+  grid.appendChild(card);
+});
+</script>
+</body>
+</html>
