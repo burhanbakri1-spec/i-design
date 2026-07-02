@@ -35,6 +35,27 @@ body {
   background: #aaa;
 }
 
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.4s ease-out forwards;
+}
+
 @keyframes slideDown {
   from {
     transform: translateY(-100%);
@@ -58,7 +79,46 @@ body {
 }
 
 .animate-slide-up {
-  animation: slideUp 0.35s ease-in forwards;
+  animation: slideUp 0.2s ease-in forwards;
+}
+
+@keyframes slideUpFromBelow {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up-from-below {
+  animation: slideUpFromBelow 0.3s ease-out forwards;
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.animate-slide-out-right {
+  animation: slideOutRight 0.3s ease-in forwards;
+}
+
+@keyframes slideOutBottom {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+.animate-slide-out-bottom {
+  animation: slideOutBottom 0.3s ease-in forwards;
 }
 
 .image-wrap {

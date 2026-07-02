@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 const lines = [
   { x1: 45, y1: 10, x2: 45, y2: 90, sw: 18 },
@@ -41,6 +42,8 @@ export default function IntroAnimation() {
   const [logoStart, setLogoStart] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuEntered, setMenuEntered] = useState(false);
+  const [logoHovered, setLogoHovered] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -93,17 +96,23 @@ export default function IntroAnimation() {
               requestAnimationFrame(() => setMenuEntered(true));
             }
           }}
-          className="group cursor-pointer pointer-events-auto"
+          className="cursor-pointer pointer-events-auto"
         >
           <div className="relative h-[62px] sm:h-[72px] scale-[0.5] origin-left">
-            <svg viewBox="0 0 460 100" className={`h-full transition-all duration-300 ${menuVisible ? 'opacity-0' : ''} group-hover:opacity-0 group-hover:-translate-x-[4cm]`} fill="none">
+            <svg
+              viewBox="0 0 460 100"
+              className={`h-full transition-all duration-300 ${menuVisible ? 'opacity-0' : ''} ${!menuVisible && logoHovered ? 'opacity-0 -translate-x-[4cm]' : ''}`}
+              fill="none"
+              onMouseEnter={() => setLogoHovered(true)}
+              onMouseLeave={() => setLogoHovered(false)}
+            >
               {lines.map((l, i) => (
                 <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} strokeWidth={l.sw} strokeLinecap="square" className="transition-[stroke] duration-[5000ms]" stroke={logoStart ? 'black' : '#999'} />
               ))}
               <polyline points="295,18 295,90 350,90 350,50 328,50" strokeWidth={5} strokeLinecap="square" strokeLinejoin="miter" className="transition-[stroke] duration-[5000ms]" stroke={logoStart ? 'black' : '#999'} />
               <polyline points="365,90 365,78 377,78 377,66 389,66 389,54 401,54 401,42 413,42 413,30 418,30" strokeWidth={5} strokeLinecap="square" strokeLinejoin="miter" className="transition-[stroke] duration-[5000ms]" stroke={logoStart ? 'black' : '#999'} />
             </svg>
-            <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 opacity-0 ${menuVisible ? 'opacity-100' : 'group-hover:opacity-100'} pointer-events-none -translate-x-[4cm]`}>
+            <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 opacity-0 ${menuVisible ? 'opacity-100' : ''} ${!menuVisible && logoHovered ? 'opacity-100' : ''} pointer-events-none -translate-x-[4cm]`}>
               <img
                 src="/hamburger.png"
                 alt=""
@@ -115,12 +124,55 @@ export default function IntroAnimation() {
       </div>
       {menuVisible && (
         <div data-logo-menu className={`fixed left-[2cm] top-[72px] sm:top-[80px] w-[4cm] bg-white pointer-events-auto z-0 -translate-y-[0.3cm] transition-transform duration-300 ${menuEntered ? 'translate-x-0' : '-translate-x-full'}`}>
-          <div className="py-5 text-xs tracking-[0.15em]">
+          <div className="py-5 -mt-[0.5cm] -ml-[0.3cm] text-xs tracking-[0.15em]">
             {menuItems.map((item) => (
               <button
                 key={item}
-                onClick={() => { setMenuEntered(false); setTimeout(() => setMenuVisible(false), 300); }}
-                className="block text-[#949494] hover:text-black transition-colors cursor-pointer py-3"
+                onClick={() => {
+                  const label = item.trim();
+                  const pathname = window.location.pathname;
+                  setMenuEntered(false);
+                  if (
+                    (label === 'PROJECTS' && pathname === '/') ||
+                    (label === 'NEWS' && pathname.startsWith('/news')) ||
+                    (label === 'SUSTAINABILITY' && pathname.startsWith('/sustainability')) ||
+                    (label === 'PEOPLE' && pathname.startsWith('/people'))
+                  ) {
+                    setTimeout(() => setMenuVisible(false), 300);
+                    return;
+                  }
+                  if (label === 'ABOUT' && pathname.startsWith('/about')) {
+                    setTimeout(() => {
+                      setMenuVisible(false);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 300);
+                    return;
+                  }
+                  const section = document.getElementById('projects-section') || document.getElementById('news-section');
+                  const aboutSection = document.getElementById('about-section');
+                  if (section && (label === 'PROJECTS' || label === 'NEWS')) {
+                    section.classList.add('animate-slide-out-right');
+                  }
+                  if (aboutSection && label === 'ABOUT') {
+                    aboutSection.classList.add('animate-slide-out-bottom');
+                  }
+                  setTimeout(() => {
+                    setMenuVisible(false);
+                    sessionStorage.setItem('page-entrance', 'slide-in-left');
+                    if (label === 'NEWS') {
+                      router.push('/news');
+                    } else if (label === 'PROJECTS') {
+                      router.push('/');
+                    } else if (label === 'ABOUT') {
+                      router.push('/about');
+                    } else if (label === 'SUSTAINABILITY') {
+                      router.push('/sustainability');
+                    } else if (label === 'PEOPLE') {
+                      router.push('/people');
+                    }
+                  }, 300);
+                }}
+                className="block text-[#949494] hover:text-black transition-colors cursor-pointer py-[3.5px]"
               >
                 {item}
               </button>

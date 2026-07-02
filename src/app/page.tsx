@@ -10,6 +10,17 @@ export default function Home() {
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(null);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
+  const [entranceClass] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const pageEntrance = sessionStorage.getItem('page-entrance');
+      if (pageEntrance === 'slide-in-left') {
+        sessionStorage.removeItem('page-entrance');
+        return 'animate-slide-in-left';
+      }
+    }
+    return '';
+  });
+
   const handleCategoryClick = useCallback((cat: string) => {
     setExpandedCategory((prev) => (prev === cat ? null : cat));
     setSelectedCategory(cat);
@@ -37,7 +48,7 @@ export default function Home() {
     (categorySubItems[expandedCategory]?.length ?? 0) > 0;
 
   return (
-    <>
+    <div className={entranceClass}>
       <Navbar
         selectedCategory={selectedCategory}
         selectedSubCategory={selectedSubCategory}
@@ -46,6 +57,6 @@ export default function Home() {
         onSubCategoryClick={handleSubCategoryClick}
       />
       <ProjectsGrid projects={filtered} hasSubNav={hasSubNav} />
-    </>
+    </div>
   );
 }
