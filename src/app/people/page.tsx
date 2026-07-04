@@ -152,16 +152,15 @@ function PersonRow({ person, groupId, onSelect, isSelected, onHover, onLeave, ex
 }
 
 export default function PeoplePage() {
-  const [entranceClass] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const pe = sessionStorage.getItem('page-entrance');
-      if (pe === 'slide-in-left') {
-        sessionStorage.removeItem('page-entrance');
-        return 'animate-slide-in-left';
-      }
+  const [entranceClass, setEntranceClass] = useState('');
+
+  useEffect(() => {
+    const pe = sessionStorage.getItem('page-entrance');
+    sessionStorage.removeItem('page-entrance');
+    if (pe === 'slide-in-left') {
+      setEntranceClass('animate-slide-in-left');
     }
-    return '';
-  });
+  }, []);
 
   const [activeNav, setActiveNav] = useState<string | null>(null);
   const [selectedPerson, setSelectedPerson] = useState<{ person: Person; groupId: string } | null>(null);

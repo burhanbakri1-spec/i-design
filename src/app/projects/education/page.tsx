@@ -3,7 +3,7 @@
 
 import { projects } from '@/data/projects';
 import Navbar from '@/components/Navbar';
-import ProjectsGrid from '@/components/ProjectsGrid';
+import PortfolioGrid from '@/components/PortfolioGrid';
 
 export default function ducationPage() {
   const term = 'education'.toUpperCase();
@@ -31,7 +31,7 @@ export default function ducationPage() {
             {filtered.length} result{(filtered.length !== 1) ? 's' : ''} for &ldquo;education&rdquo;
           </p>
         </div>
-        <ProjectsGrid projects={filtered} />
+        <PortfolioGrid projects={filtered} noPadding />
       </section>
     </>
   );

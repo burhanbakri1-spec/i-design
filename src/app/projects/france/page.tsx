@@ -2,7 +2,7 @@
 
 import { projects } from '@/data/projects';
 import Navbar from '@/components/Navbar';
-import ProjectsGrid from '@/components/ProjectsGrid';
+import PortfolioGrid from '@/components/PortfolioGrid';
 
 export default function rancePage() {
   const term = 'france'.toUpperCase();
@@ -30,7 +30,7 @@ export default function rancePage() {
             {filtered.length} result{(filtered.length !== 1) ? 's' : ''} for &ldquo;france&rdquo;
           </p>
         </div>
-        <ProjectsGrid projects={filtered} />
+        <PortfolioGrid projects={filtered} noPadding />
       </section>
     </>
   );

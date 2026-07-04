@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Article {
   image: string;
@@ -101,16 +101,15 @@ function ArticleCard({ article }: { article: Article }) {
 }
 
 export default function SustainabilityPage() {
-  const [entranceClass] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const pe = sessionStorage.getItem('page-entrance');
-      if (pe === 'slide-in-left') {
-        sessionStorage.removeItem('page-entrance');
-        return 'animate-slide-in-left';
-      }
+  const [entranceClass, setEntranceClass] = useState('');
+
+  useEffect(() => {
+    const pe = sessionStorage.getItem('page-entrance');
+    sessionStorage.removeItem('page-entrance');
+    if (pe === 'slide-in-left') {
+      setEntranceClass('animate-slide-in-left');
     }
-    return '';
-  });
+  }, []);
 
   return (
     <div id="sustainability-section" className={`relative z-10 bg-white pb-[100px] ${entranceClass}`}>

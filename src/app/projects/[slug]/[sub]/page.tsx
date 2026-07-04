@@ -48,13 +48,14 @@ function Sidebar() {
   );
 }
 
-export default function SubCategoryPage({
+export default async function SubCategoryPage({
   params,
 }: {
-  params: { slug: string; sub: string };
+  params: Promise<{ slug: string; sub: string }>;
 }) {
-  const category = (params?.slug || '').toUpperCase();
-  const subParam = params?.sub || '';
+  const { slug, sub } = await params;
+  const category = (slug || '').toUpperCase();
+  const subParam = sub || '';
   const items = categorySubItems[category] || [];
   const match = items.find((item) => item.toLowerCase() === subParam);
   const subCategory = match || subParam;

@@ -2,7 +2,7 @@
 
 import { projects } from '@/data/projects';
 import Navbar from '@/components/Navbar';
-import ProjectsGrid from '@/components/ProjectsGrid';
+import PortfolioGrid from '@/components/PortfolioGrid';
 
 export default function ArchitectureSpacePage() {
   const category = 'ARCHITECTURE';
@@ -23,7 +23,7 @@ export default function ArchitectureSpacePage() {
         onCategoryClick={() => {}}
         onSubCategoryClick={() => {}}
       />
-      <ProjectsGrid projects={filtered} hasSubNav={true} />
+      <PortfolioGrid projects={filtered} />
     </div>
   );
 }

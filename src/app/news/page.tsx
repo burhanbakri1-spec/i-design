@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const items = ['News', 'Events', 'Awards', 'Lectures'];
@@ -35,19 +35,19 @@ const newsItems = [
 
 export default function NewsPage() {
   const router = useRouter();
-  const [entranceClass] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const pageEntrance = sessionStorage.getItem('page-entrance');
-      if (pageEntrance === 'slide-in-left') {
-        sessionStorage.removeItem('page-entrance');
-        return 'animate-slide-in-left';
-      }
+  const [entranceClass, setEntranceClass] = useState('');
+
+  useEffect(() => {
+    const pe = sessionStorage.getItem('page-entrance');
+    sessionStorage.removeItem('page-entrance');
+    if (pe === 'slide-in-left') {
+      setEntranceClass('animate-slide-in-left');
+    } else {
       const dir = sessionStorage.getItem('news-direction');
       sessionStorage.removeItem('news-direction');
-      return dir === 'down' ? 'animate-slide-down' : 'animate-slide-up-from-below';
+      setEntranceClass(dir === 'down' ? 'animate-slide-down' : 'animate-slide-up-from-below');
     }
-    return 'animate-slide-up-from-below';
-  });
+  }, []);
 
   const navigateWithTransition = useCallback((href: string) => {
     const targetRaw = href === '/news' ? 'News' : href.split('/').pop()!;

@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { projects, categorySubItems } from '@/data/projects';
 import Navbar from '@/components/Navbar';
-import ProjectsGrid from '@/components/ProjectsGrid';
+import PortfolioGrid from '@/components/PortfolioGrid';
 
 interface Props {
   category: string;
@@ -62,9 +62,8 @@ function CategoryPageContent({ category, subCategory, noHeading }: Props) {
         onCategoryClick={handleCategoryClick}
         onSubCategoryClick={handleSubCategoryClick}
       />
-      <ProjectsGrid
+      <PortfolioGrid
         projects={filtered}
-        hasSubNav={hasSubNav}
         heading={!noHeading && subCategory && selectedSubCategory ? `${category} / ${selectedSubCategory}` : undefined}
       />
     </>

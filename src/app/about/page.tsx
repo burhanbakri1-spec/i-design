@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 
 const heroText =
   'The escalating complexity of the world and the accelerating speed of change exceed any individual\u2019s capacity to comprehend. For architects operating today, the Golden Ratio is no longer the standard \u2013 rather, the UN\u2019s 17 Sustainable Development Goals are. From a single elegant equation, architects are now held to multidimensional success criteria with almost infinite variables.\n\nSince sustainability is inherently a question of complex systems, circular design, and holistic thinking, no single person holds the solution. As architects and urbanists, we must team with scientists, engineers with biologists, politicians with entrepreneurs, to combine skill sets and perspectives, knowledge and sensibility, to match the complexity of the challenges we face. As future formgivers, we aren\u2019t defined by our individual talents or singular skill sets \u2013 but rather by our capacity to pool the skills of the many to give our future form.';
@@ -158,16 +158,15 @@ function DraggableGallery({ cards }: { cards: Card[] }) {
 }
 
 export default function AboutPage() {
-  const [entranceClass] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const pe = sessionStorage.getItem('page-entrance');
-      if (pe === 'slide-in-left') {
-        sessionStorage.removeItem('page-entrance');
-        return 'animate-slide-in-left';
-      }
+  const [entranceClass, setEntranceClass] = useState('');
+
+  useEffect(() => {
+    const pe = sessionStorage.getItem('page-entrance');
+    sessionStorage.removeItem('page-entrance');
+    if (pe === 'slide-in-left') {
+      setEntranceClass('animate-slide-in-left');
     }
-    return '';
-  });
+  }, []);
 
   return (
     <div id="about-section" className={`relative z-10 bg-white pt-[26px] md:pt-[120px] pb-[100px] ${entranceClass}`}>

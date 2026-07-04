@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const items = [
@@ -24,16 +24,15 @@ const items = [
 
 export default function EventsPage() {
   const router = useRouter();
-  const [entranceClass] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const pageEntrance = sessionStorage.getItem('page-entrance');
-      if (pageEntrance === 'slide-in-left') {
-        sessionStorage.removeItem('page-entrance');
-        return 'animate-slide-in-left';
-      }
+  const [entranceClass, setEntranceClass] = useState('');
+
+  useEffect(() => {
+    const pe = sessionStorage.getItem('page-entrance');
+    sessionStorage.removeItem('page-entrance');
+    if (pe === 'slide-in-left') {
+      setEntranceClass('animate-slide-in-left');
     }
-    return 'animate-slide-up-from-below';
-  });
+  }, []);
   const navigateWithTransition = useCallback((href: string) => {
     const section = document.getElementById('news-section');
     if (section) {

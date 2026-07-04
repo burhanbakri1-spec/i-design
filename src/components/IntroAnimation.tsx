@@ -136,7 +136,8 @@ export default function IntroAnimation() {
                     (label === 'PROJECTS' && pathname === '/') ||
                     (label === 'NEWS' && pathname.startsWith('/news')) ||
                     (label === 'SUSTAINABILITY' && pathname.startsWith('/sustainability')) ||
-                    (label === 'PEOPLE' && pathname.startsWith('/people'))
+                    (label === 'PEOPLE' && pathname.startsWith('/people')) ||
+                    (label === 'CAREERS' && pathname.startsWith('/careers'))
                   ) {
                     setTimeout(() => setMenuVisible(false), 300);
                     return;
@@ -150,11 +151,15 @@ export default function IntroAnimation() {
                   }
                   const section = document.getElementById('projects-section') || document.getElementById('news-section');
                   const aboutSection = document.getElementById('about-section');
+                  const careersSection = document.getElementById('careers-section');
                   if (section && (label === 'PROJECTS' || label === 'NEWS')) {
                     section.classList.add('animate-slide-out-right');
                   }
                   if (aboutSection && label === 'ABOUT') {
                     aboutSection.classList.add('animate-slide-out-bottom');
+                  }
+                  if (careersSection && label === 'CAREERS') {
+                    careersSection.classList.add('animate-slide-out-bottom');
                   }
                   setTimeout(() => {
                     setMenuVisible(false);
@@ -169,6 +174,8 @@ export default function IntroAnimation() {
                       router.push('/sustainability');
                     } else if (label === 'PEOPLE') {
                       router.push('/people');
+                    } else if (label === 'CAREERS') {
+                      router.push('/careers');
                     }
                   }, 300);
                 }}
