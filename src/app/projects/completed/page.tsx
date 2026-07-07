@@ -1,19 +1,22 @@
 'use client';
 
+import { useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { projects } from '@/data/projects';
 import Navbar from '@/components/Navbar';
 import PortfolioGrid from '@/components/PortfolioGrid';
 
-export default function ompletedPage() {
-  const term = 'completed'.toUpperCase();
-  const filtered = projects.filter((p) => {
-    if (p.subCategory?.toUpperCase() === term) return true;
-    if (p.category?.toUpperCase() === term) return true;
-    if (p.location?.toUpperCase().includes(term)) return true;
-    if (p.title?.toUpperCase().includes(term)) return true;
-    if (p.description?.toUpperCase().includes(term)) return true;
-    return false;
-  });
+export default function CompletedPage() {
+  const router = useRouter();
+
+  const handleCategoryClick = useCallback((cat: string) => {
+    router.push(`/projects/${cat.toLowerCase()}`);
+  }, [router]);
+
+  const handleSubCategoryClick = useCallback((cat: string, sub: string) => {
+    if (!cat && !sub) { router.push('/'); return; }
+    router.push(`/projects/${cat.toLowerCase()}/${sub.toLowerCase()}`);
+  }, [router]);
 
   return (
     <>
@@ -21,18 +24,10 @@ export default function ompletedPage() {
         selectedCategory={null}
         selectedSubCategory={null}
         expandedCategory={null}
-        onCategoryClick={() => {}}
-        onSubCategoryClick={() => {}}
+        onCategoryClick={handleCategoryClick}
+        onSubCategoryClick={handleSubCategoryClick}
       />
-      <section className="pt-[86px] pb-12 px-4 md:px-6">
-        <div className="max-w-[998px] mx-auto mb-4">
-          <p className="text-xs tracking-[0.15em] uppercase text-black/40">
-            {filtered.length} result{(filtered.length !== 1) ? 's' : ''} for &ldquo;completed&rdquo;
-          </p>
-        </div>
-        <PortfolioGrid projects={filtered} noPadding />
-      </section>
+      <PortfolioGrid projects={projects} />
     </>
   );
 }
-

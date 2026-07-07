@@ -135,26 +135,29 @@ const clients: Record<string, string> = {
 };
 
 const sizes: Record<string, string> = {
-  'the-plus': '7,000 m² / 75,347 ft²',
-  'not-a-hotel-setouchi': '3,200 m² / 34,445 ft²',
-  'copenhill': '41,000 m² / 441,320 ft²',
-  'amager-bakke': '41,000 m² / 441,320 ft²',
-  'le-goeland': '850 m² / 9,150 ft²',
-  'musee-des-confluences': '14,000 m² / 150,695 ft²',
-  'the-shed': '18,500 m² / 199,132 ft²',
-  'vessel': '5,000 m² / 53,820 ft²',
-  'rasmus-knudsen-school': '12,000 m² / 129,167 ft²',
-  'bloxhub': '8,500 m² / 91,493 ft²',
-  'nordic-pavilion': '600 m² / 6,458 ft²',
-  'royal-danish-library': '21,000 m² / 226,042 ft²',
-  'auckland-art-gallery': '7,500 m² / 80,729 ft²',
-  'kistefos-museum': '1,800 m² / 19,375 ft²',
-  'mountain-dwellings': '33,000 m² / 355,208 ft²',
-  '8-house': '61,000 m² / 656,597 ft²',
-  'vm-houses': '25,000 m² / 269,098 ft²',
-  'tietgen-dormitory': '26,000 m² / 279,862 ft²',
-  'sdu-campus': '15,000 m² / 161,459 ft²',
-  'kaleidoscope': '2,500 m² / 26,910 ft²',
+  'the-plus': '7,000 / 75,347',
+  'not-a-hotel-setouchi': '3,200 / 34,445',
+  'copenhill': '41,000 / 441,320',
+  'amager-bakke': '41,000 / 441,320',
+  'le-goeland': '850 / 9,150',
+  'musee-des-confluences': '14,000 / 150,695',
+  'the-shed': '18,500 / 199,132',
+  'vessel': '5,000 / 53,820',
+  'rasmus-knudsen-school': '12,000 / 129,167',
+  'bloxhub': '8,500 / 91,493',
+  'nordic-pavilion': '600 / 6,458',
+  'royal-danish-library': '21,000 / 226,042',
+  'auckland-art-gallery': '7,500 / 80,729',
+  'kistefos-museum': '1,800 / 19,375',
+  'mountain-dwellings': '33,000 / 355,208',
+  '8-house': '61,000 / 656,597',
+  'vm-houses': '25,000 / 269,098',
+  'tietgen-dormitory': '26,000 / 279,862',
+  'sdu-campus': '15,000 / 161,459',
+  'kaleidoscope': '2,500 / 26,910',
+  'creative-hub': '12,400 / 133,472',
+  'desert-rose': '14,705 / 158,284',
+  'desert-oasis': '14,705 / 158,284',
 };
 
 const quotes: Record<string, { text: string; author: string }> = {
@@ -174,10 +177,6 @@ const quotes: Record<string, { text: string; author: string }> = {
     text: 'By transforming a conventional industrial facility into a public amenity, we have created a new typology for urban infrastructure — one that gives back to the community.',
     author: 'Bjarke Ingels — Founder & Creative Director, IDESIGN',
   },
-  'le-goeland': {
-    text: 'Inspired by the graceful flight of the seagull, the pavilion captures the essence of the Breton coastline — a delicate balance between land and sea.',
-    author: 'Bjarke Ingels — Founder & Creative Director, IDESIGN',
-  },
   'musee-des-confluences': {
     text: 'The museum is conceived as a gateway between knowledge and wonder, its crystalline form reflecting the confluence of science, art, and humanity.',
     author: 'Bjarke Ingels — Founder & Creative Director, IDESIGN',
@@ -188,6 +187,10 @@ const quotes: Record<string, { text: string; author: string }> = {
   },
   'vessel': {
     text: 'Vessel is not a building but a destination — a honeycomb of spaces that invites exploration and connection, offering unparalleled views of the Hudson Yards.',
+    author: 'Bjarke Ingels — Founder & Creative Director, IDESIGN',
+  },
+  'le-goeland': {
+    text: 'Inspired by the graceful flight of the seagull, the pavilion captures the essence of the Breton coastline — a delicate balance between land and sea. The sculptural form emerges from the landscape like a wing catching the wind, creating a dialogue between architecture and the maritime environment.',
     author: 'Bjarke Ingels — Founder & Creative Director, IDESIGN',
   },
   'superkilen': {
@@ -210,6 +213,10 @@ const quotes: Record<string, { text: string; author: string }> = {
     text: 'The Twist museum is a habitable bridge that twists at its center, transforming a simple crossing into a sculptural journey through art and landscape.',
     author: 'Bjarke Ingels — Founder & Creative Director, IDESIGN',
   },
+  'creative-hub': {
+    text: 'Creative Hub represents a new chapter in architectural innovation, where the past and future coalesce to inspire the next generation of artists.',
+    author: 'Bjarke Ingels — Founder & Creative Director, IDESIGN',
+  },
 };
 
 const featuresList: Record<string, { title: string; text: string }[]> = {
@@ -229,9 +236,25 @@ const featuresList: Record<string, { title: string; text: string }[]> = {
     { title: 'CONTINUOUS PATH', text: 'A continuous public path winds from ground to roof, creating an urban promenade through the building.' },
     { title: 'MIXED-USE PROGRAM', text: 'The building integrates residential, commercial, and office spaces in a single interconnected volume.' },
   ],
+  'le-goeland': [
+    { title: 'SCULPTURAL FORM', text: 'The pavilion\'s wing-like roof sweeps upward, echoing the silhouette of a seagull in flight and creating a landmark on the Saint-Malo coastline.' },
+    { title: 'MARITIME MATERIALITY', text: 'Local stone, weathering steel, and timber are used to create a palette that ages gracefully in the coastal climate, referencing the region\'s shipbuilding heritage.' },
+    { title: 'PANORAMIC OUTLOOK', text: 'Floor-to-ceiling glazing frames uninterrupted views of the bay, dissolving the boundary between interior and the vast seascape beyond.' },
+    { title: 'SHELTERED TERRACE', text: 'A cantilevered deck extends towards the sea, offering visitors an immersive experience of the coastal elements while remaining sheltered from the wind.' },
+  ],
   'superkilen': [
     { title: 'THREE ZONES', text: 'The park is divided into three zones: the Red Square for sports, the Black Market for urban living, and the Green Park for nature.' },
     { title: 'GLOBAL COLLECTION', text: 'Objects from 50+ countries — from Moroccan fountains to Chinese palm trees — create a truly international urban space.' },
+  ],
+  'creative-hub': [
+    { title: 'DESIGN CONCEPT', text: 'Studios organized around a central open courtyard, fostering collaboration and chance encounters between artists.' },
+    { title: 'MATERIALITY', text: 'Recycled timber framework set against original concrete walls, preserving the industrial heritage while introducing warmth.' },
+    { title: 'SPATIAL EXPERIENCE', text: 'Variable high ceilings and saw-tooth skylights provide optimal natural lighting for artist studios and gallery spaces.' },
+  ],
+  'the-shed': [
+    { title: 'KINETIC SHELL', text: 'The building\'s telescoping outer shell glides on rails, extending the footprint by 15 meters to create a vast, column-free event space.' },
+    { title: 'ADAPTIVE REUSE', text: 'The design integrates a preserved historic structure with a new movable envelope, blending heritage with cutting-edge engineering.' },
+    { title: 'FLEXIBLE PROGRAM', text: 'From intimate performances to large-scale exhibitions, the variable configuration accommodates an unprecedented range of cultural events.' },
   ],
 };
 
@@ -249,7 +272,12 @@ const defaultTeam = [
   { label: 'Collaborators', members: ['Cj Group', 'OBH Gruppen', 'Henry Jensen', 'ZERO Engineering'] },
 ];
 
+const detailCache = new Map<string, ProjectDetail>();
+
 export function getProjectDetail(id: string, project: { title: string; description: string; category: string; subCategory: string; images: string[] }): ProjectDetail {
+  const cached = detailCache.get(id);
+  if (cached) return cached;
+
   const quote = quotes[id] || {
     text: `${project.title} represents a new chapter in architectural innovation — a project that challenges conventions and inspires new ways of thinking about the built environment.`,
     author: 'Bjarke Ingels — Founder & Creative Director, IDESIGN',
@@ -257,10 +285,10 @@ export function getProjectDetail(id: string, project: { title: string; descripti
 
   const features = featuresList[id] || defaultFeatures(project);
 
-  return {
+  const result: ProjectDetail = {
     client: clients[id] || `${project.title} Commission`,
     typology: project.subCategory || project.category,
-    size: sizes[id] || `${Math.floor(1000 + Math.random() * 20000).toLocaleString()} m²`,
+    size: sizes[id] || Math.floor(1000 + Math.random() * 20000).toLocaleString('en-US'),
     status: 'Completed',
     quote: quote.text,
     quoteAuthor: quote.author,
@@ -270,4 +298,6 @@ export function getProjectDetail(id: string, project: { title: string; descripti
     })),
     team: defaultTeam,
   };
+  detailCache.set(id, result);
+  return result;
 }

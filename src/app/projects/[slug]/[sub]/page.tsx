@@ -60,12 +60,10 @@ export default async function SubCategoryPage({
   const match = items.find((item) => item.toLowerCase() === subParam);
   const subCategory = match || subParam;
 
-  const isArchitecture = category === 'ARCHITECTURE';
-
   return (
     <div>
-      {isArchitecture && <Sidebar />}
-      <CategoryPage key={subParam} category={category} subCategory={subCategory} noHeading={isArchitecture} />
+      {category === 'ARCHITECTURE' && <Sidebar />}
+      <CategoryPage key={subParam} category={category} subCategory={subCategory} />
     </div>
   );
 }

@@ -4,7 +4,13 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { categories, categorySubItems } from '@/data/projects';
 
-const words = ['COMPLETED', 'FRANCE', 'EDUCATION', 'MUSEUM', 'SUSTAINABILITY'];
+const words = [
+  { name: 'COMPLETED', link: '/projects/completed' },
+  { name: 'FRANCE', link: '/projects/france' },
+  { name: 'EDUCATION', link: '/projects/education' },
+  { name: 'MUSEUM', link: '/projects/museum' },
+  { name: 'SUSTAINABILITY', link: '/projects/sustainability' },
+];
 
 const Square = () => (
   <span className="inline-block w-1.5 h-1.5 bg-black shrink-0" aria-hidden />
@@ -58,14 +64,7 @@ export default function Navbar({
   };
 
   const navigateWithTransition = useCallback((href: string) => {
-    const section = document.getElementById('projects-section');
-    if (section) {
-      section.classList.remove('animate-slide-down');
-      section.classList.add('animate-slide-up');
-    }
-    setTimeout(() => {
-      router.push(href);
-    }, 2350);
+    router.push(href);
   }, [router]);
 
   const hasSubNav =
@@ -74,16 +73,16 @@ export default function Navbar({
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white">
       <div className="pb-1">
-        <div className="relative flex items-center min-h-[72px] sm:min-h-[80px] pt-2 pb-1">
+        <div className="relative flex items-center min-h-[56px] sm:min-h-[72px] lg:min-h-[80px] pt-1 lg:pt-2 pb-1 px-0 lg:px-[3cm]">
           {/* التصنيفات */}
-          <nav className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 mt-[-0.3cm] flex items-center justify-center gap-[2cm] text-xs tracking-[0.15em] uppercase overflow-x-auto">
+          <nav className="flex-1 lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:top-1/2 lg:-translate-y-1/2 flex items-center gap-3 sm:gap-4 md:gap-6 lg:gap-[2cm] text-[9px] sm:text-[10px] md:text-xs tracking-[0.15em] uppercase overflow-x-auto scrollbar-hide pr-2 lg:pr-0">
             {categories.map((cat) => {
               const isActive = selectedCategory === cat && !selectedSubCategory;
               return (
                 <button
                   key={cat}
                   onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); navigateWithTransition(`/projects/${cat.toLowerCase()}`); }}
-                  className={`flex items-center gap-1.5 whitespace-nowrap transition-colors cursor-pointer ${
+                  className={`flex items-center gap-1 whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
                     isActive ? 'text-black' : 'text-[#949494] hover:text-black'
                   }`}
                 >
@@ -95,7 +94,7 @@ export default function Navbar({
           </nav>
 
           {hasSubNav && (
-            <div className="absolute left-1/2 -translate-x-1/2 flex gap-[0.7cm] justify-center text-[10px] sm:text-[11px] tracking-[0.15em] capitalize overflow-x-auto" style={{ top: 'calc(50% + 12px)' }}>
+            <div className="lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:justify-center flex gap-2 sm:gap-3 lg:gap-[0.7cm] text-[9px] sm:text-[10px] lg:text-[11px] tracking-[0.15em] capitalize overflow-x-auto scrollbar-hide" style={{ top: 'calc(50% + 12px)' }}>
               {categorySubItems[expandedCategory!]
                 .filter((sub) => sub)
                 .map((sub) => {
@@ -105,7 +104,7 @@ export default function Navbar({
                     <button
                       key={sub}
                       onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); navigateWithTransition(`/projects/${expandedCategory!.toLowerCase()}/${sub.toLowerCase()}`); }}
-                      className="flex items-center gap-1.5 whitespace-nowrap text-black transition-colors cursor-pointer"
+                      className="flex items-center gap-1 whitespace-nowrap shrink-0 text-black transition-colors cursor-pointer"
                     >
                       {isActive && <Square />}
                       {sub}
@@ -116,15 +115,14 @@ export default function Navbar({
           )}
 
           {/* زر البحث */}
-          <div className="absolute right-[3cm] top-1/2 -translate-y-1/2 mt-[-0.3cm]">
+          <div className="relative shrink-0 lg:absolute lg:right-[3cm] lg:top-1/2 lg:-translate-y-1/2 ml-2 lg:ml-0">
             <button
               onMouseDown={(e) => e.stopPropagation()}
               onClick={() => setShowDropdown((prev) => !prev)}
-              className="relative text-xs tracking-[0.15em] uppercase min-w-[90px] sm:min-w-[100px] h-4 text-[#A7A7A7]"
+              className="relative text-[9px] sm:text-[10px] lg:text-xs tracking-[0.15em] uppercase text-[#A7A7A7] w-[120px] sm:w-[150px] lg:w-[180px] text-left"
             >
-              {/* أيقونة البحث ثابتة */}
               <svg
-                className="absolute left-0 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none"
+                className="absolute left-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 lg:w-3 lg:h-3 pointer-events-none"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -134,33 +132,32 @@ export default function Navbar({
                 <path d="m21 21-4.35-4.35" />
               </svg>
               {!showDropdown && (
-                <span className="block text-left pl-[16px] leading-4 whitespace-nowrap">
-                  {tempWord ?? words[placeholderIndex]}
+                <span className="block pl-[14px] lg:pl-[18px] leading-4 whitespace-nowrap">
+                  {tempWord ?? words[placeholderIndex].name}
                 </span>
               )}
             </button>
 
-            {/* القائمة المنسدلة مع رفع 2سم وإزاحة 1سم */}
+            {/* القائمة المنسدلة */}
             <div
               ref={dropdownRef}
               onMouseDown={(e) => e.stopPropagation()}
-              className={`fixed right-[-1cm] top-[0.5cm] bg-white border border-black/10 shadow-md z-[9999] transform transition-transform duration-500 ${
+              className={`absolute left-0 top-full mt-1 bg-white border border-black/10 shadow-md z-[9999] ${
                 showDropdown
-                  ? 'translate-x-0 opacity-100 visible'
-                  : 'translate-x-full opacity-0 invisible pointer-events-none'
+                  ? 'opacity-100 visible'
+                  : 'opacity-0 invisible pointer-events-none'
               }`}
             >
               {words.map((w) => (
                 <button
-                  key={w}
-                  onClick={() => {
-                    handleWordSelect(w);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    navigateWithTransition(`/projects/${w.toLowerCase()}`);
+                  key={w.name}
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    router.push(w.link);
                   }}
-                  className="block w-full text-left px-3 py-0.5 text-[10px] tracking-[0.15em] uppercase text-[#A7A7A7] hover:text-black whitespace-nowrap transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 w-full text-left px-3 py-1 sm:py-0.5 text-[10px] sm:text-xs tracking-[0.15em] uppercase text-[#949494] hover:text-black whitespace-nowrap transition-colors cursor-pointer"
                 >
-                  {w}
+                  {w.name}
                 </button>
               ))}
             </div>

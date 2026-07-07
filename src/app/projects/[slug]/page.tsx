@@ -22,11 +22,18 @@ export function generateStaticParams() {
   });
 }
 
-export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ProjectPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ cat?: string; sub?: string }>;
+}) {
   const { slug } = await params;
+  const { cat, sub } = await searchParams;
   const normalizedSlug = resolveProjectSlug(slug);
   const project = projects.find((p) => p.id === normalizedSlug);
   if (!project) notFound();
 
-  return <ProjectDetailClient project={project} slug={normalizedSlug} />;
+  return <ProjectDetailClient project={project} slug={normalizedSlug} urlCat={cat} urlSub={sub} />;
 }

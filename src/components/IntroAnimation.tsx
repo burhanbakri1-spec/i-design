@@ -82,7 +82,7 @@ export default function IntroAnimation() {
         data-logo-menu
         className={`fixed transition-all duration-[5000ms] ease-in-out ${
           logoStart || phase === 'screenHidden'
-            ? 'left-[2cm] top-[-5px]'
+            ? 'left-[1cm] top-[-3px]'
             : 'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
         }`}
       >
@@ -123,8 +123,14 @@ export default function IntroAnimation() {
         </button>
       </div>
       {menuVisible && (
-        <div data-logo-menu className={`fixed left-[2cm] top-[72px] sm:top-[80px] w-[4cm] bg-white pointer-events-auto z-0 -translate-y-[0.3cm] transition-transform duration-300 ${menuEntered ? 'translate-x-0' : '-translate-x-full'}`}>
-          <div className="py-5 -mt-[0.5cm] -ml-[0.3cm] text-xs tracking-[0.15em]">
+        <div data-logo-menu className={`fixed left-[1cm] top-[72px] sm:top-[80px] w-[4cm] bg-white pointer-events-auto z-0`}
+  style={{
+    transform: menuEntered
+      ? 'translateX(0) translateY(-0.3cm)'
+      : 'translateX(-100%) translateY(-0.3cm)',
+    transition: 'transform 300ms',
+  }}>
+          <div className="py-5 -mt-[0.5cm] -ml-[0cm] text-xs tracking-[0.15em]">
             {menuItems.map((item) => (
               <button
                 key={item}
@@ -152,6 +158,13 @@ export default function IntroAnimation() {
                   const section = document.getElementById('projects-section') || document.getElementById('news-section');
                   const aboutSection = document.getElementById('about-section');
                   const careersSection = document.getElementById('careers-section');
+                  if (label === 'CONTACT') {
+                    setTimeout(() => {
+                      setMenuVisible(false);
+                      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+                    }, 300);
+                    return;
+                  }
                   if (section && (label === 'PROJECTS' || label === 'NEWS')) {
                     section.classList.add('animate-slide-out-right');
                   }

@@ -52,9 +52,9 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-white border-t border-black/10 pt-16 pb-8 px-4 md:px-6">
+    <footer className="bg-white border-t border-black/10 pt-8 lg:pt-16 pb-8 px-3 sm:px-4 md:px-6">
       <div className="max-w-[1600px] mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {/* EMAIL */}
           <div>
             <button

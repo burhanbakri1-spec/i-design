@@ -9,10 +9,9 @@ import PortfolioGrid from '@/components/PortfolioGrid';
 interface Props {
   category: string;
   subCategory?: string;
-  noHeading?: boolean;
 }
 
-function CategoryPageContent({ category, subCategory, noHeading }: Props) {
+function CategoryPageContent({ category, subCategory }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(
@@ -64,7 +63,9 @@ function CategoryPageContent({ category, subCategory, noHeading }: Props) {
       />
       <PortfolioGrid
         projects={filtered}
-        heading={!noHeading && subCategory && selectedSubCategory ? `${category} / ${selectedSubCategory}` : undefined}
+        heading={undefined}
+        category={category}
+        subCategory={selectedSubCategory || undefined}
       />
     </>
   );
