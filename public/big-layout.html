@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BIG — Architecture</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: #fff;
+      color: #111;
+      display: flex;
+      justify-content: center;
+      padding: 20px 30px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1100px;
+      width: 100%;
+    }
+
+    .logo {
+      font-size: 120px;
+      font-weight: 800;
+      letter-spacing: -6px;
+      line-height: 1;
+      color: #111;
+      margin-bottom: 75px;
+    }
+
+    .categories-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .categories-list span {
+      font-size: 13px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+      color: #444;
+      text-transform: uppercase;
+      line-height: 1.6;
+    }
+
+    .categories-list .highlight {
+      font-weight: 600;
+      color: #111;
+    }
+
+    @media (max-width: 768px) {
+      .logo { font-size: 60px; letter-spacing: -3px; }
+    }
+
+    @media (max-width: 480px) {
+      .logo { font-size: 40px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">BIG</div>
+
+    <div class="categories-list">
+      <span class="highlight">Culture</span>
+      <span>Education</span>
+      <span>Work</span>
+      <span>Hospitality</span>
+      <span>Residential</span>
+      <span>Infrastructure</span>
+      <span>Space</span>
+      <span>Sports</span>
+      <span>Health</span>
+    </div>
+  </div>
+</body>
+</html>

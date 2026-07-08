@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>i DESIGN — Portfolio</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #fff;
+      color: #222;
+      line-height: 1.4;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .sidebar {
+      padding: 2rem 1.5rem;
+      border-right: 1px solid #eee;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 550;
+      letter-spacing: -0.02em;
+      margin-bottom: 2.5rem;
+    }
+
+    .nav-list {
+      list-style: none;
+    }
+
+    .nav-list li {
+      font-size: 0.95rem;
+      font-weight: 420;
+      margin-bottom: 0.9rem;
+      color: #333;
+    }
+
+    .nav-list li:last-child {
+      margin-top: 1.8rem;
+      font-weight: 600;
+      color: #111;
+    }
+
+    .main {
+      padding: 2rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1.5rem;
+      font-size: 0.85rem;
+      font-weight: 450;
+      color: #444;
+      margin-bottom: 3rem;
+    }
+
+    .weather-info {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .projects {
+      flex: 1;
+    }
+
+    .project {
+      margin-bottom: 2.2rem;
+    }
+
+    .project:last-child {
+      margin-bottom: 0;
+    }
+
+    .project-title {
+      font-size: 1.6rem;
+      font-weight: 520;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.2rem;
+      color: #111;
+    }
+
+    .project-location {
+      font-size: 0.9rem;
+      color: #666;
+      font-weight: 380;
+    }
+
+    .bottom-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #eee;
+      font-size: 0.8rem;
+      color: #444;
+    }
+
+    .lang {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .weather-detail {
+      display: flex;
+      gap: 0.8rem;
+    }
+
+    @media (max-width: 800px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        border-right: none;
+        border-bottom: 1px solid #eee;
+      }
+      .main {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <aside class="sidebar">
+    <div class="logo">i DESIGN</div>
+    <ul class="nav-list">
+      <li>Architecture</li>
+      <li>Interiors</li>
+      <li>Landscape</li>
+      <li>Planning</li>
+      <li>Products</li>
+      <li>COMPLETED</li>
+    </ul>
+  </aside>
+
+  <main class="main">
+    <div class="top-bar">
+      <div class="weather-info">
+        <span>25°C</span>
+        <span>Weather</span>
+      </div>
+      <span>N</span>
+    </div>
+
+    <div class="projects">
+      <div class="project">
+        <div class="project-title">The Sphere</div>
+        <div class="project-location">COPENHAGEN, DENMARK</div>
+      </div>
+      <div class="project">
+        <div class="project-title">City Lights</div>
+        <div class="project-location">COPENHAGEN, DENMARK</div>
+      </div>
+    </div>
+
+    <div class="bottom-info">
+      <div class="lang">
+        <span>ENG</span>
+        <span>US</span>
+      </div>
+      <div class="weather-detail">
+        <span>25°C</span>
+        <span>Weather</span>
+      </div>
+      <span>10/02/2022</span>
+    </div>
+  </main>
+</div>
+</body>
+</html>

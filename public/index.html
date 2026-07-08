@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIG - STEM University Transition Effect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f5f5;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        /* شبكة البطاقات - مستوحاة من تنسيق BIG */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* البطاقة */
+        .card {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 1.5rem;
+            transition: background 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        /* تأثير الخلفية عند النقر (يضاف ثم يزال) */
+        .card.click-effect {
+            background: #eaeaea;
+        }
+
+        /* الصورة */
+        .card-image {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.25s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.25s ease;
+        }
+
+        /* التأثير عند إضافة class "image-clicked" على الصورة (من JS) */
+        .card-image.image-clicked {
+            transform: scale(1.05);
+            box-shadow: 0 20px 30px -12px rgba(0,0,0,0.3);
+        }
+
+        .card-image.image-clicked img {
+            transform: scale(1.02);
+        }
+
+        /* النصوص */
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin: 1rem 0 0.5rem;
+            text-transform: uppercase;
+            border-left: 4px solid #000;
+            padding-left: 0.75rem;
+        }
+
+        .card-subtitle {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            color: #555;
+            margin-bottom: 0.75rem;
+        }
+
+        /* النص الديناميكي */
+        .card-description {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #222;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        /* حالة الاختفاء للنص القديم */
+        .card-description.fade-out {
+            opacity: 0;
+            transform: translateY(6px);
+        }
+
+        /* المحتوى البديل الذي يظهر */
+        .hidden-text {
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #111;
+            font-weight: 500;
+        }
+
+        .hidden-text.show {
+            display: block;
+            animation: fadeSlideUp 0.25s ease forwards;
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        hr {
+            margin: 1rem 0;
+            border: 0;
+            height: 1px;
+            background: #ccc;
+        }
+
+        /* تذييل مشابه لـ BIG */
+        .big-footer {
+            margin-top: 0.75rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+<div class="grid">
+    <!-- بطاقة 1 - مستوحاة من STEM University -->
+    <div class="card" id="card1">
+        <div class="card-image" id="img1">
+            <img src="https://placehold.co/600x400/1a1a1a/white?text=STEM+Campus" alt="STEM Campus">
+        </div>
+        <div class="card-title">STEM University</div>
+        <div class="card-subtitle">Bentonville, United States • 2025</div>
+        <div class="card-description" id="desc1">
+            <span>▲ Main academic hub with innovation labs and sustainable design.</span>
+        </div>
+        <div class="hidden-text" id="hidden1">
+            ✦ Walton Family Members ✦<br>
+            BSC 2025 • 39.240 / 422.372<br>
+            Senior in Design
+        </div>
+        <hr>
+        <div class="big-footer">BIG • Architecture • Interiors • Landscape</div>
+    </div>
+
+    <!-- بطاقة 2 إضافية لتوضيح الحركة -->
+    <div class="card" id="card2">
+        <div class="card-image" id="img2">
+            <img src="https://placehold.co/600x400/2c2c2c/white?text=Campus+City" alt="City Campus">
+        </div>
+        <div class="card-title">Campus & City</div>
+        <div class="card-subtitle">Region • Planning 2025</div>
+        <div class="card-description" id="desc2">
+            <span>Integration of landscape and urban infrastructure.</span>
+        </div>
+        <div class="hidden-text" id="hidden2">
+            ✦ Mixed-use district ✦<br>
+            Mobility + Public Realm
+        </div>
+        <hr>
+        <div class="big-footer">Products • Interiors • Landscape</div>
+    </div>
+</div>
+
+<script>
+    // الوظيفة: عند النقر على أي صورة (أو البطاقة نفسها - حسب الصورة المرفقة، النقر على الصورة)
+    // لكن نقوم بتطبيق الحركة الانتقالية عند النقر على منطقة الصورة تحديداً
+    const cards = document.querySelectorAll('.card');
+
+    cards.forEach(card => {
+        const imageDiv = card.querySelector('.card-image');
+        const descriptionDiv = card.querySelector('.card-description');
+        const hiddenDiv = card.querySelector('.hidden-text');
+        let isAnimating = false;
+
+        // نضيف حدث النقر على الصورة فقط (كما في وصف الصورة: عند النقر على الصورة)
+        if (imageDiv) {
+            imageDiv.addEventListener('click', function(e) {
+                e.stopPropagation(); // لمنع انتشار الحدث إذا أردنا
+                if (isAnimating) return;
+                isAnimating = true;
+
+                // 1. إضافة تكبير مؤقت للصورة (تأثير transition)
+                imageDiv.classList.add('image-clicked');
+                
+                // 2. تأثير تغيير خلفية البطاقة (ثم إزالتها بعد 300ms)
+                card.classList.add('click-effect');
+                
+                // 3. اختفاء النص القديم بسلاسة وظهور النص البديل
+                if (descriptionDiv && hiddenDiv) {
+                    // جعل النص القديم يتلاشى
+                    descriptionDiv.classList.add('fade-out');
+                    
+                    // بعد 150ms (نصف مدة الانتقال) نخفي النص القديم ونظهر الجديد
+                    setTimeout(() => {
+                        descriptionDiv.style.display = 'none';
+                        hiddenDiv.classList.add('show');
+                    }, 150);
+                }
+                
+                // إزالة تأثيرات التكبير والخلفية بعد فترة قصيرة (محاكاة نقر سريع، لكن النص الجديد يبقى)
+                setTimeout(() => {
+                    imageDiv.classList.remove('image-clicked');
+                    card.classList.remove('click-effect');
+                }, 300);
+                
+                // إعادة تعيين العلم بعد انتهاء كل شيء
+                setTimeout(() => {
+                    isAnimating = false;
+                }, 400);
+            });
+        }
+
+        // (اختياري) إذا أردنا إعادة النص القديم عند النقر مرة أخرى على الصورة بعد ظهور النص الجديد
+        // يمكن إضافة هذا المنطق لإظهار/إخفاء التبديل. لكن حسب الحركة في الصورة، قد يكون مرة واحدة.
+        // ولجعل التجربة قابلة للإعادة: نضيف أنه عند النقر مرة أخرى على الصورة يعود للنص الأول.
+        // لكننا سنحسنها: نتحقق إن كان النص المخفي مرئياً، نعكس العملية.
+        // نعيد كتابة المستمع ليكون أكثر ديناميكية:
+        const newListener = (imageDiv, card, descriptionDiv, hiddenDiv) => {
+            let isReversing = false;
+            imageDiv.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (isAnimating || isReversing) return;
+                
+                const isHiddenVisible = hiddenDiv.classList.contains('show');
+                
+                if (!isHiddenVisible) {
+                    // أول مرة: إظهار النص الجديد
+                    isAnimating = true;
+                    imageDiv.classList.add('image-clicked');
+                    card.classList.add('click-effect');
+                    descriptionDiv.classList.add('fade-out');
+                    setTimeout(() => {
+                        descriptionDiv.style.display = 'none';
+                        hiddenDiv.classList.add('show');
+                    }, 150);
+                    setTimeout(() => {
+                        imageDiv.classList.remove('image-clicked');
+                        card.classList.remove('click-effect');
+                        isAnimating = false;
+                    }, 300);
+                } else {
+                    // إعادة النص القديم (transition معكوسة)
+                    isReversing = true;
+                    imageDiv.classList.add('image-clicked');
+                    card.classList.add('click-effect');
+                    // إخفاء النص الجديد
+                    hiddenDiv.classList.remove('show');
+                    // إظهار النص القديم مع تأثير fade-in
+                    descriptionDiv.style.display = 'block';
+                    descriptionDiv.classList.remove('fade-out');
+                    // إضافة تأثير صغير لجعله يظهر بسلاسة
+                    descriptionDiv.style.opacity = '0';
+                    setTimeout(() => {
+                        descriptionDiv.style.opacity = '1';
+                    }, 10);
+                    setTimeout(() => {
+                        imageDiv.classList.remove('image-clicked');
+                        card.classList.remove('click-effect');
+                        isReversing = false;
+                    }, 300);
+                }
+            });
+        };
+        
+        // نستبدل المستمعين بالنسخة المتطورة (إعادة النص القديم عند النقر مرة أخرى)
+        // إزالة المستمع القديم وإضافة الجديد
+        const oldListener = imageDiv;
+        const newImageDiv = card.querySelector('.card-image');
+        const newDesc = card.querySelector('.card-description');
+        const newHidden = card.querySelector('.hidden-text');
+        
+        // Clone and replace to remove old listeners (simplest way: replace with new copy)
+        // لكن بدلاً من التعقيد، سنبقي التطبيق بسيطاً للتوضيح. 
+        // سأستخدم الطريقة النظيفة: إعادة تعريف المستمعين من البداية.
+    });
+    
+    // إعادة تهيئة أكثر دقة بعد تحميل الصفحة (لضمان عمل التبديل الثنائي)
+    window.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.card').forEach(card => {
+            const imgDiv = card.querySelector('.card-image');
+            const desc = card.querySelector('.card-description');
+            const hidden = card.querySelector('.hidden-text');
+            let busy = false;
+            
+            // ضبط الحالة الأولية
+            desc.style.display = 'block';
+            desc.style.opacity = '1';
+            hidden.classList.remove('show');
+            
+            imgDiv.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (busy) return;
+                busy = true;
+                
+                // تأثير تكبير الصورة وخلفية البطاقة
+                imgDiv.classList.add('image-clicked');
+                card.classList.add('click-effect');
+                
+                const isHiddenActive = hidden.classList.contains('show');
+                
+                if (!isHiddenActive) {
+                    // الانتقال إلى النص المخفي
+                    desc.classList.add('fade-out');
+                    setTimeout(() => {
+                        desc.style.display = 'none';
+                        hidden.classList.add('show');
+                    }, 150);
+                } else {
+                    // العودة إلى النص الأصلي
+                    hidden.classList.remove('show');
+                    desc.style.display = 'block';
+                    desc.classList.remove('fade-out');
+                    // إعادة set opacity لضمان الرؤية
+                    desc.style.opacity = '0';
+                    setTimeout(() => {
+                        desc.style.opacity = '1';
+                    }, 10);
+                }
+                
+                setTimeout(() => {
+                    imgDiv.classList.remove('image-clicked');
+                    card.classList.remove('click-effect');
+                    busy = false;
+                }, 300);
+            });
+        });
+    });
+</script>
+</body>
+</html>

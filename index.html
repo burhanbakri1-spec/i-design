@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BIG-inspired Search</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <div class="search-shell">
+        <button
+          id="searchToggle"
+          class="search-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="searchPanel"
+          aria-haspopup="dialog"
+          aria-label="Open search"
+        >
+          <span class="search-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M10.5 4.5a6 6 0 1 1 0 12 6 6 0 0 1 0-12Zm0 0 8.5 8.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <span class="placeholder-stack" aria-hidden="true">
+            <span class="placeholder-word is-current">Projects</span>
+            <span class="placeholder-word is-next">Architecture</span>
+          </span>
+        </button>
+
+        <div id="searchPanel" class="search-panel" role="dialog" aria-label="Search" aria-modal="false">
+          <div class="search-panel__inner">
+            <label class="search-field" for="searchInput">
+              <span class="sr-only">Search</span>
+              <input
+                id="searchInput"
+                class="search-input"
+                type="text"
+                placeholder="Search..."
+                autocomplete="off"
+                spellcheck="false"
+                aria-label="Search projects and topics"
+              />
+            </label>
+
+            <div class="search-results" id="searchResults"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>

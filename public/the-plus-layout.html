@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Plus — Layout</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .card {
+      display: flex;
+      align-items: center;
+      gap: 4rem;
+      max-width: 1000px;
+      width: 100%;
+    }
+
+    .text-block {
+      flex-shrink: 0;
+      text-align: left;
+    }
+
+    .text-block h1 {
+      font-size: 3rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #111;
+      margin-bottom: 0.3rem;
+    }
+
+    .text-block .location {
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: #888;
+      letter-spacing: 0.02em;
+    }
+
+    .image-block {
+      flex: 1;
+    }
+
+    .image-block img {
+      display: block;
+      width: 100%;
+      border-radius: 6px;
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        flex-direction: column-reverse;
+        gap: 1.5rem;
+      }
+
+      .text-block {
+        width: 100%;
+      }
+
+      .text-block h1 {
+        font-size: 2rem;
+      }
+
+      .text-block .location {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="text-block">
+      <h1>The Plus</h1>
+      <p class="location">MAGNOR, NORWAY</p>
+    </div>
+    <div class="image-block">
+      <img src="https://picsum.photos/600/400" alt="Placeholder">
+    </div>
+  </div>
+</body>
+</html>
