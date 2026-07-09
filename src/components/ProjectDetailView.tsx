@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import type { Project } from '@/data/projects';
 import { getProjectDetail } from '@/data/projectDetails';
 
@@ -52,7 +53,7 @@ function MetadataPanel({ detail, project, className }: { detail: NonNullable<Ret
         <h4 className="mt-3 text-[10px] leading-none text-[#797979] uppercase lg:mt-4 lg:text-[12px]">Status</h4>
         <p className="text-[10px] text-black uppercase lg:text-sm lg:max-w-[180px]">{detail.status}</p>
       </div>
-      <div className="mt-auto pt-[1.8cm]">
+      <div className="mt-auto pt-6 lg:pt-[1.8cm]">
         <div className="text-[11px] text-[#797979] uppercase">Share</div>
         <ShareButtons projectId={project.id} projectTitle={project.title} />
       </div>
@@ -171,8 +172,8 @@ export default function ProjectDetailView({ project, compact = false }: Props) {
               style={{ width: '280px', minHeight: slideHeight }}
             >
               <div className="size-[50px] bg-black flex items-center justify-center">
-                <img src="/screenshot.png" alt="" className="h-[20px] w-[20px] object-contain" />
-              </div>
+                  <Image src="/screenshot.png" alt="" width={20} height={20} className="object-contain" />
+                </div>
               <div className="mt-6">
                 <h1 className="text-[18px] leading-5 font-normal break-words">{project.title}</h1>
                 <p className="mt-1 text-[15px] text-[#797979] uppercase">{project.location}</p>
@@ -186,14 +187,15 @@ export default function ProjectDetailView({ project, compact = false }: Props) {
               className="relative select-none drag-none"
             >
               <div className={`relative overflow-hidden select-none drag-none`} style={{ height: slideHeight }}>
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="drag-none h-full w-auto object-cover select-none"
-                  style={{ height: slideHeight }}
-                  draggable={false}
-                />
-              </div>
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    fill
+                    className="object-cover select-none"
+                    sizes="(max-width: 1023px) 50vw, 50vw"
+                    draggable={false}
+                  />
+                </div>
             </motion.div>
           </div>
 
@@ -201,13 +203,15 @@ export default function ProjectDetailView({ project, compact = false }: Props) {
           <div className="lg:hidden w-full flex flex-row items-stretch min-h-[40vh]">
             <div className="relative select-none drag-none flex-1 min-w-0 overflow-hidden">
               <div className="relative w-full h-full overflow-hidden select-none drag-none">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="drag-none w-full h-full object-cover select-none"
-                  draggable={false}
-                />
-              </div>
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    fill
+                    className="object-cover select-none"
+                    sizes="(max-width: 1023px) 50vw, 50vw"
+                    draggable={false}
+                  />
+                </div>
             </div>
             <div className="flex-1 flex flex-col justify-between px-4 py-2">
               <div>
@@ -217,9 +221,9 @@ export default function ProjectDetailView({ project, compact = false }: Props) {
                   transition={{ ...spring, delay: 0.15 }}
                   className="flex flex-nowrap"
                 >
-                  <div className="size-[20px] bg-black shrink-0 flex items-center justify-center">
-                    <img src="/screenshot.png" alt="" className="h-[8px] w-[8px] object-contain" />
-                  </div>
+                    <div className="size-[20px] bg-black shrink-0 flex items-center justify-center">
+                      <Image src="/screenshot.png" alt="" width={8} height={8} className="object-contain" />
+                    </div>
                   <div className="ml-[8px]">
                     <h1 className="text-[11px] leading-[11px] font-normal break-words">
                       {project.title}
@@ -252,14 +256,15 @@ export default function ProjectDetailView({ project, compact = false }: Props) {
               className="relative select-none drag-none max-lg:w-full"
             >
               <div className="max-w-[90vw] min-w-[90vw] lg:min-w-0 relative overflow-hidden select-none drag-none" style={{ height: slideHeight }}>
-                <img
-                  src={img}
-                  alt={`${project.title} ${i + 2}`}
-                  className="drag-none w-full h-full object-cover select-none max-lg:max-h-[40vh]"
-                  style={{ height: slideHeight, width: 'auto' }}
-                  draggable={false}
-                />
-                <span className="absolute bottom-4 right-4 text-[10px] leading-[10px] uppercase select-none">
+                  <Image
+                    src={img}
+                    alt={`${project.title} ${i + 2}`}
+                    fill
+                    className="object-cover select-none max-lg:max-h-[40vh]"
+                    sizes="(max-width: 1023px) 90vw, 50vw"
+                    draggable={false}
+                  />
+                  <span className="absolute bottom-4 right-4 text-[10px] leading-[10px] uppercase select-none">
                   <span className="text-[#797979]">{String(i + 2).padStart(2, '0')}</span>/{String(project.images.length).padStart(2, '0')}
                 </span>
               </div>
@@ -277,13 +282,14 @@ export default function ProjectDetailView({ project, compact = false }: Props) {
               className="relative select-none drag-none max-lg:w-full"
             >
               <div className="max-w-[90vw] min-w-[90vw] lg:min-w-0 relative overflow-hidden select-none drag-none" style={{ height: slideHeight }}>
-                <img
-                  src={f.image}
-                  alt={f.title}
-                  className="drag-none w-full h-full object-cover select-none max-lg:max-h-[40vh]"
-                  style={{ height: slideHeight, width: 'auto' }}
-                  draggable={false}
-                />
+                  <Image
+                    src={f.image}
+                    alt={f.title}
+                    fill
+                    className="object-cover select-none max-lg:max-h-[40vh]"
+                    sizes="(max-width: 1023px) 90vw, 50vw"
+                    draggable={false}
+                  />
                 <div className="absolute bottom-6 left-0 right-0 mx-auto text-center max-w-[500px] px-4 select-none">
                   <p className="text-[10px] leading-[10px] text-white">
                     <strong className="font-normal uppercase">{f.title}</strong>

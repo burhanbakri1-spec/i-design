@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Project } from '@/data/projects';
 import { getProjectDetail } from '@/data/projectDetails';
@@ -34,12 +35,14 @@ function ExpandedRow({ project }: { project: Project }) {
             {project.images.map((img, i) => (
               <div
                 key={i}
-                className="w-[240px] sm:w-[280px] md:w-[320px] shrink-0 aspect-[4/3] overflow-hidden bg-gray-50"
+                className="relative w-[240px] sm:w-[280px] md:w-[320px] shrink-0 aspect-[4/3] overflow-hidden bg-gray-50"
               >
-                <img
+                <Image
                   src={img}
                   alt=""
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="320px"
+                  className="object-cover"
                 />
               </div>
             ))}

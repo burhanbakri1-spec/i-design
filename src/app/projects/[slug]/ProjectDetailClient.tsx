@@ -8,7 +8,9 @@ import { projects } from '@/data/projects';
 import { getProjectDetail } from '@/data/projectDetails';
 import type { Project } from '@/data/projects';
 import Navbar from '@/components/Navbar';
+import MobileNavbar from '@/components/MobileNavbar';
 import PortfolioGrid from '@/components/PortfolioGrid';
+import CaseStudyView from '@/components/CaseStudyView';
 
 const spring = {
   type: "spring" as const,
@@ -83,7 +85,7 @@ function ShareButtons({ projectId, projectTitle }: { projectId: string; projectT
 
 function MetadataPanel({ detail, project, className }: { detail: NonNullable<ReturnType<typeof getProjectDetail>>; project: Project; className?: string }) {
   return (
-    <div className={`flex flex-col ${className}`}>
+    <div className={`flex flex-col flex-1 ${className}`}>
       <div className="flex flex-col gap-6">
         <div>
           <h4 className="text-[10px] text-[#797979] uppercase lg:text-[12px]">Client</h4>
@@ -117,6 +119,7 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
 
   const [showZoom, setShowZoom] = useState(true);
   const [zoomData, setZoomData] = useState<{ rect: { top: number; left: number; width: number; height: number }; image: string } | null>(null);
+  const [isZoomedOut, setIsZoomedOut] = useState(false);
 
   useEffect(() => {
     const raw = sessionStorage.getItem('zoomData');
@@ -138,6 +141,12 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
       scrollRef.current.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     }
   }, [slug]);
+
+  useEffect(() => {
+    const onScroll = () => setIsZoomedOut(window.scrollY > 50);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const slidesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -264,7 +273,14 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
           onCategoryClick={handleCategoryClick}
           onSubCategoryClick={handleSubCategoryClick}
         />
-        <div className="h-[calc(100vh-44px)] flex items-center justify-center px-7 md:px-[70px] lg:px-[100px] xl:px-[130px]">
+        <MobileNavbar
+          selectedCategory={selectedCategory}
+          selectedSubCategory={selectedSubCategory}
+          expandedCategory={expandedCategory}
+          onCategoryClick={handleCategoryClick}
+          onSubCategoryClick={handleSubCategoryClick}
+        />
+        <div className="h-[calc(100vh-44px)] flex items-center justify-center px-4 md:px-[70px] lg:px-[100px] xl:px-[130px]">
           <div className="max-w-[700px]">
             <Link
               href="/"
@@ -274,6 +290,35 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
             </Link>
             <p className="text-[15px] leading-relaxed text-black/70">{project.description}</p>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  const isCaseStudy = slug === 'sky-view';
+
+  if (isCaseStudy) {
+    return (
+      <div className="min-h-screen bg-white">
+        {showZoom && zoomData && (
+          <ZoomOverlay data={zoomData} onComplete={() => setShowZoom(false)} />
+        )}
+        <div className={showZoom ? 'invisible' : ''}>
+          <Navbar
+            selectedCategory={selectedCategory}
+            selectedSubCategory={selectedSubCategory}
+            expandedCategory={expandedCategory}
+            onCategoryClick={handleCategoryClick}
+            onSubCategoryClick={handleSubCategoryClick}
+          />
+          <MobileNavbar
+            selectedCategory={selectedCategory}
+            selectedSubCategory={selectedSubCategory}
+            expandedCategory={expandedCategory}
+            onCategoryClick={handleCategoryClick}
+            onSubCategoryClick={handleSubCategoryClick}
+          />
+          <CaseStudyView project={project} />
         </div>
       </div>
     );
@@ -292,25 +337,33 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
         onCategoryClick={handleCategoryClick}
         onSubCategoryClick={handleSubCategoryClick}
       />
+      <MobileNavbar
+        selectedCategory={selectedCategory}
+        selectedSubCategory={selectedSubCategory}
+        expandedCategory={expandedCategory}
+        onCategoryClick={handleCategoryClick}
+        onSubCategoryClick={handleSubCategoryClick}
+      />
 
       <motion.div
         key={slug}
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        animate={{ opacity: 1, scale: isZoomedOut ? 0.8 : 1 }}
         transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-        className="w-full">
+        className="w-full"
+        style={{ transformOrigin: 'center top' }}>
         {/* BIG.dk-style horizontal scroll container */}
         <div
           ref={(el) => {
             (scrollRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
             (slidesContainerRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
           }}
-          className="flex flex-col overflow-x-hidden overflow-y-scroll select-none lg:flex-row lg:overflow-x-scroll lg:overflow-y-hidden cursor-grab no-scrollbar"
+          className="flex flex-col overflow-x-hidden overflow-y-scroll select-none lg:flex-row lg:overflow-x-scroll lg:overflow-y-hidden cursor-grab no-scrollbar mt-[2.5cm]"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
-          style={{ maxHeight: '91vh' }}
+          style={{ maxHeight: '77vh' }}
         >
           {/* ===== SLIDE 1: Hero image + project info ===== */}
           <div className="big-project-view w-screen shrink-0 flex flex-col lg:flex-row lg:py-24 lg:px-[5vw] max-lg:mx-[5vw] max-lg:justify-center">
@@ -320,10 +373,10 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ ...spring }}
-                className="flex flex-col text-right shrink-0 -ml-[1cm]"
-                style={{ width: '280px', height: `${91}vh` }}
+                className="flex flex-col text-right shrink-0 lg:-ml-[1cm]"
+                  style={{ width: '280px', height: '77vh' }}
               >
-                <div className="flex flex-col h-full pt-[2.5cm] items-end">
+                <div className="flex flex-col h-full items-end">
                   <div className="size-[50px] bg-black flex items-center justify-center mb-6">
                     <img src="/screenshot.png" alt="" className="h-[20px] w-[20px] object-contain" />
                   </div>
@@ -340,14 +393,13 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
                 transition={{ duration: 0.6 }}
                 className="relative select-none drag-none"
               >
-                <div className="lg:w-fit relative overflow-hidden select-none drag-none"
-                  style={{ height: `${91}vh` }}
+                <div className="relative overflow-hidden select-none drag-none shrink-0"
+                  style={{ height: '77vh', aspectRatio: '3 / 2' }}
                 >
                   <img
                     src={project.image}
                     alt={project.title}
-                    className="drag-none w-auto object-cover select-none"
-                    style={{ height: `${91}vh` }}
+                    className="drag-none w-full h-full object-cover select-none"
                     draggable={false}
                   />
                 </div>
@@ -401,58 +453,90 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
 
           {/* ===== Remaining images as full-viewport slides ===== */}
           {project.images.slice(1).map((img, i) => (
-            <div key={i} className="big-project-view relative w-screen shrink-0 flex flex-col lg:flex-row lg:items-start lg:gap-[5vw] lg:gap-16 lg:py-24 lg:px-[5vw] max-lg:mx-[5vw] max-lg:justify-center">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6 }}
-                className="relative select-none drag-none max-lg:w-full"
-              >
-                <div className="max-w-[90vw] min-w-[90vw] lg:w-fit lg:min-w-0 relative overflow-hidden select-none drag-none"
-                  style={{ height: `${91}vh` }}
+            <div key={i} className="big-project-view w-screen shrink-0 flex flex-col lg:flex-row lg:py-24 lg:px-[5vw] max-lg:mx-[5vw] max-lg:justify-center">
+              <div className="hidden lg:flex lg:flex-row lg:w-full lg:gap-16 lg:items-center lg:justify-end">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.6 }}
+                  className="relative select-none drag-none"
                 >
-                  <img
-                    src={img}
-                    alt={`${project.title} ${i + 2}`}
-                    className="drag-none w-full h-full object-cover select-none max-lg:max-h-[50vh] lg:w-auto"
-                    style={{ height: `${91}vh` }}
-                    draggable={false}
-                  />
-                  <span className="absolute bottom-4 right-4 text-[10px] leading-[10px] uppercase select-none">
-                    <span className="text-[#797979]">{String(i + 2).padStart(2, '0')}</span>/{String(project.images.length).padStart(2, '0')}
-                  </span>
+                  <div className="relative overflow-hidden select-none drag-none shrink-0"
+                    style={{ height: '77vh', aspectRatio: '3 / 2' }}
+                  >
+                    <img
+                      src={img}
+                      alt={`${project.title} ${i + 2}`}
+                      className="drag-none w-full h-full object-cover select-none"
+                      draggable={false}
+                    />
+                    <span className="absolute bottom-4 right-4 text-[10px] leading-[10px] uppercase select-none">
+                      <span className="text-[#797979]">{String(i + 2).padStart(2, '0')}</span>/{String(project.images.length).padStart(2, '0')}
+                    </span>
+                  </div>
+                </motion.div>
+              </div>
+              <div className="lg:hidden w-full flex flex-row items-stretch min-h-[50vh]">
+                <div className="relative select-none drag-none flex-1 min-w-0 overflow-hidden">
+                  <div className="relative w-full h-full overflow-hidden select-none drag-none">
+                    <img
+                      src={img}
+                      alt={`${project.title} ${i + 2}`}
+                      className="drag-none w-full h-full object-cover select-none"
+                      draggable={false}
+                    />
+                  </div>
                 </div>
-              </motion.div>
+              </div>
             </div>
           ))}
 
           {/* ===== Feature / Concept slides ===== */}
           {detail.features.map((f, i) => (
-            <div key={i} className="big-project-view relative w-screen shrink-0 flex flex-col lg:flex-row lg:items-start lg:gap-[5vw] lg:gap-16 lg:py-24 lg:px-[5vw] max-lg:mx-[5vw] max-lg:justify-center">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6 }}
-                className="relative select-none drag-none max-lg:w-full"
-              >
-                <div className="max-w-[90vw] min-w-[90vw] lg:w-fit lg:min-w-0 relative overflow-hidden select-none drag-none"
-                  style={{ height: `${91}vh` }}
+            <div key={i} className="big-project-view w-screen shrink-0 flex flex-col lg:flex-row lg:py-24 lg:px-[5vw] max-lg:mx-[5vw] max-lg:justify-center">
+              <div className="hidden lg:flex lg:flex-row lg:w-full lg:gap-16 lg:items-center lg:justify-end">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.6 }}
+                  className="relative select-none drag-none"
                 >
-                  <img
-                    src={f.image}
-                    alt={f.title}
-                    className="drag-none w-full h-full object-cover select-none max-lg:max-h-[50vh] lg:w-auto"
-                    style={{ height: `${91}vh` }}
-                    draggable={false}
-                  />
-                  <div className="absolute bottom-6 left-0 right-0 mx-auto text-center max-w-[500px] px-4 select-none">
-                    <p className="text-[10px] leading-[10px] text-white">
-                      <strong className="font-normal uppercase">{f.title}</strong>
-                    </p>
-                    <p className="text-[10px] leading-[10px] text-white/70 mt-2">{f.text}</p>
+                  <div className="relative overflow-hidden select-none drag-none shrink-0"
+                    style={{ height: '77vh', aspectRatio: '3 / 2' }}
+                  >
+                    <img
+                      src={f.image}
+                      alt={f.title}
+                      className="drag-none w-full h-full object-cover select-none"
+                      draggable={false}
+                    />
+                    <div className="absolute bottom-6 left-0 right-0 mx-auto text-center max-w-[500px] px-4 select-none">
+                      <p className="text-[10px] leading-[10px] text-white">
+                        <strong className="font-normal uppercase">{f.title}</strong>
+                      </p>
+                      <p className="text-[10px] leading-[10px] text-white/70 mt-2">{f.text}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+              <div className="lg:hidden w-full flex flex-row items-stretch min-h-[50vh]">
+                <div className="relative select-none drag-none flex-1 min-w-0 overflow-hidden">
+                  <div className="relative w-full h-full overflow-hidden select-none drag-none">
+                    <img
+                      src={f.image}
+                      alt={f.title}
+                      className="drag-none w-full h-full object-cover select-none"
+                      draggable={false}
+                    />
+                    <div className="absolute bottom-6 left-0 right-0 mx-auto text-center max-w-[500px] px-4 select-none">
+                      <p className="text-[10px] leading-[10px] text-white">
+                        <strong className="font-normal uppercase">{f.title}</strong>
+                      </p>
+                      <p className="text-[10px] leading-[10px] text-white/70 mt-2">{f.text}</p>
+                    </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </div>
           ))}
 

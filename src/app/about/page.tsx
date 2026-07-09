@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
+import Image from 'next/image';
 
 const heroText =
   'The escalating complexity of the world and the accelerating speed of change exceed any individual\u2019s capacity to comprehend. For architects operating today, the Golden Ratio is no longer the standard \u2013 rather, the UN\u2019s 17 Sustainable Development Goals are. From a single elegant equation, architects are now held to multidimensional success criteria with almost infinite variables.\n\nSince sustainability is inherently a question of complex systems, circular design, and holistic thinking, no single person holds the solution. As architects and urbanists, we must team with scientists, engineers with biologists, politicians with entrepreneurs, to combine skill sets and perspectives, knowledge and sensibility, to match the complexity of the challenges we face. As future formgivers, we aren\u2019t defined by our individual talents or singular skill sets \u2013 but rather by our capacity to pool the skills of the many to give our future form.';
@@ -82,12 +83,16 @@ function CardItem({ card }: { card: Card }) {
   const [expanded, setExpanded] = useState(false);
   return (
     <div className="w-[300px] min-w-0 shrink-0 lg:w-[420px] xl:w-[500px]">
-      <img
-        loading="lazy"
-        src={card.image}
-        alt={`${card.title} | Bjarke Ingels Group`}
-        className="relative max-h-[290px] w-full pointer-events-none lg:max-h-[310px] xl:max-h-[350px]"
-      />
+      <div className="relative max-h-[290px] w-full lg:max-h-[310px] xl:max-h-[350px]">
+        <Image
+          loading="lazy"
+          src={card.image}
+          alt={`${card.title} | Bjarke Ingels Group`}
+          fill
+          sizes="(max-width: 1023px) 300px, (max-width: 1279px) 420px, 500px"
+          className="object-cover pointer-events-none"
+        />
+      </div>
       <h3
         className="group mt-4 flex cursor-pointer items-center gap-2 text-sm uppercase select-none before:-mt-[0.5px] before:inline-block before:h-2 before:w-2 before:bg-black"
         onClick={() => setExpanded(!expanded)}
@@ -171,8 +176,8 @@ export default function AboutPage() {
   return (
     <div id="about-section" className={`relative z-10 bg-white pt-[26px] md:pt-[120px] pb-[100px] ${entranceClass}`}>
       {/* Hero */}
-      <div className="px-7 md:px-[70px] lg:px-[100px] xl:px-[130px]">
-        <h1 className="mb-5 text-[55px] leading-[1.14em] uppercase md:mb-[60px] lg:text-[70px] xl:text-[100px]">
+      <div className="px-4 md:px-[70px] lg:px-[100px] xl:px-[130px]">
+        <h1 className="mb-5 text-[clamp(2rem,10vw,55px)] leading-[1.14em] uppercase md:mb-[60px] lg:text-[70px] xl:text-[100px]">
           About
         </h1>
         <p className="mb-[60px] max-w-[965px] gap-[65px] whitespace-pre-wrap lg:columns-2 lg:gap-[85px] xl:mb-[120px]">
@@ -180,13 +185,15 @@ export default function AboutPage() {
           <span className="mt-6 block break-before-column lg:mt-0" />
           {heroText2}
         </p>
-        <img
+        <Image
           loading="eager"
           decoding="async"
           fetchPriority="high"
           src="https://media.big.dk/2022/11/wallpapergallery.jpg?width=1600"
           alt="About | Bjarke Ingels Group"
-          className="relative w-full"
+          width={1600}
+          height={900}
+          className="relative w-full h-auto"
         />
       </div>
 
@@ -194,7 +201,7 @@ export default function AboutPage() {
       {sections.map((section) => (
         <div key={section.title}>
           <div className="mt-[60px] px-7 md:px-[70px] lg:mt-[80px] lg:px-[100px] xl:px-[130px]">
-            <h2 className="mb-[34px] text-[35px] leading-[1.14em] uppercase lg:mb-[50px]">
+            <h2 className="mb-[24px] text-[clamp(1.5rem,6vw,35px)] leading-[1.14em] uppercase lg:mb-[50px]">
               {section.title}
             </h2>
             <p className="mb-[50px] max-w-[965px] gap-[65px] whitespace-pre-wrap lg:mb-[70px] lg:columns-2 lg:gap-[85px]">

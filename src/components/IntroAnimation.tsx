@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 const lines = [
@@ -78,44 +79,46 @@ export default function IntroAnimation() {
           }`}
         />
       )}
-      <div
-        data-logo-menu
-        className={`fixed transition-all duration-[5000ms] ease-in-out ${
-          logoStart || phase === 'screenHidden'
-            ? 'left-[1cm] top-[-3px]'
-            : 'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
-        }`}
-      >
-        <button
-          onClick={() => {
-            if (menuVisible) {
-              setMenuEntered(false);
-              setTimeout(() => setMenuVisible(false), 300);
-            } else {
-              setMenuVisible(true);
-              requestAnimationFrame(() => setMenuEntered(true));
-            }
-          }}
-          className="cursor-pointer pointer-events-auto"
+        <div
+          data-logo-menu
+          className={`fixed transition-all duration-[5000ms] ease-in-out ${
+            logoStart || phase === 'screenHidden'
+              ? 'left-4 lg:left-[1cm] top-[-3px]'
+              : 'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
+          }`}
         >
-          <div className="relative h-[62px] sm:h-[72px] scale-[0.5] origin-left">
-            <svg
-              viewBox="0 0 460 100"
-              className={`h-full transition-all duration-300 ${menuVisible ? 'opacity-0' : ''} ${!menuVisible && logoHovered ? 'opacity-0 -translate-x-[4cm]' : ''}`}
-              fill="none"
-              onMouseEnter={() => setLogoHovered(true)}
-              onMouseLeave={() => setLogoHovered(false)}
-            >
+          <button
+            onClick={() => {
+              if (menuVisible) {
+                setMenuEntered(false);
+                setTimeout(() => setMenuVisible(false), 300);
+              } else {
+                setMenuVisible(true);
+                requestAnimationFrame(() => setMenuEntered(true));
+              }
+            }}
+            className="cursor-pointer pointer-events-auto"
+          >
+            <div className="relative h-[62px] sm:h-[72px] scale-[0.5] origin-left">
+              <svg
+                viewBox="0 0 460 100"
+                className={`h-full transition-all duration-300 ${menuVisible ? 'opacity-0' : ''} ${!menuVisible && logoHovered ? 'opacity-0 lg:-translate-x-[4cm]' : ''}`}
+                fill="none"
+                onMouseEnter={() => setLogoHovered(true)}
+                onMouseLeave={() => setLogoHovered(false)}
+              >
               {lines.map((l, i) => (
                 <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} strokeWidth={l.sw} strokeLinecap="square" className="transition-[stroke] duration-[5000ms]" stroke={logoStart ? 'black' : '#999'} />
               ))}
               <polyline points="295,18 295,90 350,90 350,50 328,50" strokeWidth={5} strokeLinecap="square" strokeLinejoin="miter" className="transition-[stroke] duration-[5000ms]" stroke={logoStart ? 'black' : '#999'} />
               <polyline points="365,90 365,78 377,78 377,66 389,66 389,54 401,54 401,42 413,42 413,30 418,30" strokeWidth={5} strokeLinecap="square" strokeLinejoin="miter" className="transition-[stroke] duration-[5000ms]" stroke={logoStart ? 'black' : '#999'} />
             </svg>
-            <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 opacity-0 ${menuVisible ? 'opacity-100' : ''} ${!menuVisible && logoHovered ? 'opacity-100' : ''} pointer-events-none -translate-x-[4cm]`}>
-              <img
+            <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 opacity-0 ${menuVisible ? 'opacity-100' : ''} ${!menuVisible && logoHovered ? 'opacity-100' : ''} pointer-events-none lg:-translate-x-[4cm]`}>
+              <Image
                 src="/hamburger.png"
                 alt=""
+                width={40}
+                height={40}
                 className="h-full object-contain scale-[0.7]"
               />
             </div>
@@ -123,14 +126,14 @@ export default function IntroAnimation() {
         </button>
       </div>
       {menuVisible && (
-        <div data-logo-menu className={`fixed left-[1cm] top-[72px] sm:top-[80px] w-[4cm] bg-white pointer-events-auto z-0`}
+        <div data-logo-menu className={`fixed left-4 lg:left-[1cm] top-[72px] sm:top-[80px] w-40 lg:w-[4cm] bg-white pointer-events-auto z-0`}
   style={{
     transform: menuEntered
-      ? 'translateX(0) translateY(-0.3cm)'
-      : 'translateX(-100%) translateY(-0.3cm)',
+      ? 'translateX(0) translateY(-4px)'
+      : 'translateX(-100%) translateY(-4px)',
     transition: 'transform 300ms',
   }}>
-          <div className="py-5 -mt-[0.5cm] -ml-[0cm] text-xs tracking-[0.15em]">
+          <div className="py-5 lg:-mt-[0.5cm] text-xs tracking-[0.15em]">
             {menuItems.map((item) => (
               <button
                 key={item}

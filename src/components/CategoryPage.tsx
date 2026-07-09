@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { projects, categorySubItems } from '@/data/projects';
 import Navbar from '@/components/Navbar';
+import MobileNavbar from '@/components/MobileNavbar';
 import PortfolioGrid from '@/components/PortfolioGrid';
 
 interface Props {
@@ -55,6 +56,13 @@ function CategoryPageContent({ category, subCategory }: Props) {
   return (
     <>
       <Navbar
+        selectedCategory={category}
+        selectedSubCategory={selectedSubCategory}
+        expandedCategory={category}
+        onCategoryClick={handleCategoryClick}
+        onSubCategoryClick={handleSubCategoryClick}
+      />
+      <MobileNavbar
         selectedCategory={category}
         selectedSubCategory={selectedSubCategory}
         expandedCategory={category}

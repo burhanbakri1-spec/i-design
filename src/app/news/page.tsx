@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 const items = ['News', 'Events', 'Awards', 'Lectures'];
@@ -69,7 +70,22 @@ export default function NewsPage() {
 
   return (
     <div>
-      <nav className="fixed flex flex-col gap-[0.7cm] text-xs uppercase tracking-[0.2em] z-30" style={{ top: '7.7cm', left: '1cm' }}>
+      <nav className="lg:hidden flex gap-4 overflow-x-auto px-4 py-3 text-xs uppercase tracking-[0.2em] z-30 bg-white border-b border-black/5 sticky top-14" style={{}}>
+        {items.map((item) => {
+          const href = item === 'News' ? '/news' : `/news/${item.toLowerCase()}`;
+          return (
+            <button
+              key={item}
+              onClick={() => navigateWithTransition(href)}
+              className={`flex items-center gap-1.5 whitespace-nowrap shrink-0 ${item === 'News' ? 'text-black' : 'text-[#949494] hover:text-black'}`}
+            >
+              {item === 'News' && <span className="inline-block w-1.5 h-1.5 bg-black shrink-0" />}
+              {item}
+            </button>
+          );
+        })}
+      </nav>
+      <nav className="hidden lg:flex fixed flex-col gap-[26px] text-xs uppercase tracking-[0.2em] z-30" style={{ top: '291px', left: '38px' }}>
         {items.map((item) => {
           const href = item === 'News' ? '/news' : `/news/${item.toLowerCase()}`;
           return (
@@ -85,24 +101,26 @@ export default function NewsPage() {
         })}
       </nav>
       <section className="relative pt-[40px] pb-[100px]">
-        <h1 className="relative z-20 mb-5 -translate-x-1.5 bg-white px-7 pt-[26px] text-[55px] leading-[1.14em] uppercase md:mb-7 md:px-[70px] md:pt-20 lg:mb-[60px] lg:px-[100px] lg:pt-[120px] lg:text-[70px] xl:px-[130px] xl:text-[100px] -mt-[1cm]">
+        <h1 className="relative z-20 mb-5 -translate-x-1.5 bg-white px-4 pt-[26px] text-[clamp(2rem,10vw,55px)] leading-[1.14em] uppercase md:mb-7 md:px-[70px] md:pt-20 lg:mb-[60px] lg:px-[100px] lg:pt-[120px] lg:text-[70px] xl:px-[130px] xl:text-[100px]">
           News
         </h1>
 
-        <div id="news-section" className={`px-7 md:px-[70px] lg:px-[100px] xl:px-[130px] max-w-[1600px] mx-auto ${entranceClass}`}>
+        <div id="news-section" className={`px-4 md:px-[70px] lg:px-[100px] xl:px-[130px] max-w-[1600px] mx-auto ${entranceClass}`}>
           {newsItems.map((item, i) => (
             <article key={i} className="mb-16 lg:mb-[80px] grid grid-cols-1 lg:grid-cols-[68px_2fr_1fr] gap-x-10 gap-y-4">
-              <span className="text-xs text-[#898989] uppercase tabular-nums self-start ml-[5cm]">
+              <span className="text-xs text-[#898989] uppercase tabular-nums self-start lg:ml-[5cm]">
                 {item.date}
               </span>
-              <div className="flex justify-center ml-[3cm]">
-                <img
+              <div className="flex justify-center">
+                <Image
                   loading="eager"
                   decoding="async"
                   fetchPriority="high"
                   alt={item.title}
-                  className="relative h-full w-[80%] bg-transparent object-cover transition-opacity duration-75 ease-in-out"
+                  className="relative w-full lg:w-[80%] object-cover"
                   src={item.image}
+                  width={1400}
+                  height={800}
                 />
               </div>
               <div>

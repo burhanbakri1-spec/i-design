@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { projects, categorySubItems } from '@/data/projects';
 import Navbar from '@/components/Navbar';
+import MobileNavbar from '@/components/MobileNavbar';
 import PortfolioGrid from '@/components/PortfolioGrid';
 
 export default function Home() {
@@ -39,6 +40,13 @@ export default function Home() {
   return (
     <>
       <Navbar
+        selectedCategory={selectedCategory}
+        selectedSubCategory={selectedSubCategory}
+        expandedCategory={expandedCategory}
+        onCategoryClick={handleCategoryClick}
+        onSubCategoryClick={handleSubCategoryClick}
+      />
+      <MobileNavbar
         selectedCategory={selectedCategory}
         selectedSubCategory={selectedSubCategory}
         expandedCategory={expandedCategory}

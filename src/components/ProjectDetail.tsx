@@ -88,7 +88,7 @@ export default function ProjectDetail({ project, onBack }: Props) {
 
         <div ref={addToRefs} className="mb-24">
           <h3 className="text-sm tracking-[0.2em] text-white/40 mb-6 uppercase">Gallery</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-[0.225cm]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-1 lg:gap-[0.225cm]">
             {project.images.map((img, i) => (
               <div key={i} className="relative overflow-hidden aspect-[4/3] image-wrap">
                 <Image

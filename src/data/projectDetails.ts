@@ -158,6 +158,7 @@ const sizes: Record<string, string> = {
   'creative-hub': '12,400 / 133,472',
   'desert-rose': '14,705 / 158,284',
   'desert-oasis': '14,705 / 158,284',
+  'sky-view': '58,000 / 624,306',
 };
 
 const quotes: Record<string, { text: string; author: string }> = {
@@ -217,6 +218,10 @@ const quotes: Record<string, { text: string; author: string }> = {
     text: 'Creative Hub represents a new chapter in architectural innovation, where the past and future coalesce to inspire the next generation of artists.',
     author: 'Bjarke Ingels — Founder & Creative Director, IDESIGN',
   },
+  'sky-view': {
+    text: 'Sky View is a vertical oasis suspended between earth and sky — a hotel where every surface, every vista, and every spatial sequence is calibrated to elevate the human spirit through the simple act of looking outward.',
+    author: 'Bjarke Ingels — Founder & Creative Director, IDESIGN',
+  },
 };
 
 const featuresList: Record<string, { title: string; text: string }[]> = {
@@ -255,6 +260,12 @@ const featuresList: Record<string, { title: string; text: string }[]> = {
     { title: 'KINETIC SHELL', text: 'The building\'s telescoping outer shell glides on rails, extending the footprint by 15 meters to create a vast, column-free event space.' },
     { title: 'ADAPTIVE REUSE', text: 'The design integrates a preserved historic structure with a new movable envelope, blending heritage with cutting-edge engineering.' },
     { title: 'FLEXIBLE PROGRAM', text: 'From intimate performances to large-scale exhibitions, the variable configuration accommodates an unprecedented range of cultural events.' },
+  ],
+  'sky-view': [
+    { title: 'CANTILEVERED POOL', text: 'An infinity pool extends 12 meters beyond the building envelope, creating the sensation of swimming into the sky. The glass-bottom feature offers vertiginous views of the city 300 meters below.' },
+    { title: 'SKY LOBBY', text: 'The triple-height arrival hall at level 60 features a living green wall spanning 25 meters and a kinetic art installation that responds to wind patterns at altitude.' },
+    { title: 'TERRACED SUITES', text: 'Each suite features a private outdoor terrace with integrated planting, creating a cascading garden that climbs the full height of the tower.' },
+    { title: 'WIND-TUNED FACADE', text: 'The sculptural facade is engineered to channel wind loads around the structure, reducing lateral sway by 30% while framing panoramic views.' },
   ],
 };
 

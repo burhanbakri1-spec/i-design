@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { projects } from '@/data/projects';
 import Navbar from '@/components/Navbar';
+import MobileNavbar from '@/components/MobileNavbar';
 import PortfolioGrid from '@/components/PortfolioGrid';
 
 export default function MuseumPage() {
@@ -30,6 +31,13 @@ export default function MuseumPage() {
   return (
     <>
       <Navbar
+        selectedCategory={null}
+        selectedSubCategory={null}
+        expandedCategory={null}
+        onCategoryClick={handleCategoryClick}
+        onSubCategoryClick={handleSubCategoryClick}
+      />
+      <MobileNavbar
         selectedCategory={null}
         selectedSubCategory={null}
         expandedCategory={null}

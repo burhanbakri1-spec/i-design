@@ -71,7 +71,7 @@ export default function Navbar({
     expandedCategory && (categorySubItems[expandedCategory]?.length ?? 0) > 0;
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-white">
+    <header className="fixed top-0 left-0 w-full z-50 bg-white max-lg:hidden">
       <div className="pb-1">
         <div className="relative flex items-center min-h-[56px] sm:min-h-[72px] lg:min-h-[80px] pt-1 lg:pt-2 pb-1 px-0 lg:px-[3cm]">
           {/* التصنيفات */}
@@ -94,7 +94,7 @@ export default function Navbar({
           </nav>
 
           {hasSubNav && (
-            <div className="lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:justify-center flex gap-2 sm:gap-3 lg:gap-[0.7cm] text-[9px] sm:text-[10px] lg:text-[11px] tracking-[0.15em] capitalize overflow-x-auto scrollbar-hide" style={{ top: 'calc(50% + 12px)' }}>
+            <div className="lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:justify-center flex gap-2 sm:gap-3 lg:gap-[0.7cm] text-[9px] sm:text-[10px] lg:text-[11px] tracking-[0.15em] capitalize overflow-x-auto scrollbar-hide" style={{ top: 'calc(50% + 0.7cm)' }}>
               {categorySubItems[expandedCategory!]
                 .filter((sub) => sub)
                 .map((sub) => {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 interface Article {
   image: string;
@@ -66,15 +67,17 @@ const articles: Article[] = [
 function ArticleCard({ article }: { article: Article }) {
   const [expanded, setExpanded] = useState(false);
   return (
-    <article className="mt-[40px] items-start px-7 md:mx-auto md:px-[70px] lg:max-w-[80vw] lg:px-[180px] xl:max-w-[70vw] 2xl:max-w-[62vw]">
-      <div className="aspect-video h-auto w-full shrink-0">
-        <img
+    <article className="mt-[40px] items-start px-4 md:mx-auto md:px-[70px] lg:max-w-[80vw] lg:px-[180px] xl:max-w-[70vw] 2xl:max-w-[62vw]">
+      <div className="relative aspect-video w-full shrink-0">
+        <Image
           loading="eager"
           decoding="async"
           fetchPriority="high"
           src={article.image}
           alt={`${article.title} | Bjarke Ingels Group`}
-          className="relative h-full w-full bg-transparent object-cover"
+          fill
+          sizes="(max-width: 1023px) 100vw, 80vw"
+          className="object-cover"
         />
       </div>
       <h2 className="mt-6 mb-5 text-sm text-[#1b1b1b] uppercase">{article.title}</h2>
@@ -113,7 +116,7 @@ export default function SustainabilityPage() {
 
   return (
     <div id="sustainability-section" className={`relative z-10 bg-white pb-[100px] ${entranceClass}`}>
-      <h1 className="mb-5 -translate-x-1.5 px-7 pt-[26px] text-[48px] leading-[1.14em] uppercase md:px-[70px] md:pt-[80px] lg:mb-[60px] lg:px-[100px] lg:pt-[120px] lg:text-[70px] xl:px-[130px] xl:text-[100px]">
+      <h1 className="mb-5 -translate-x-1.5 px-4 pt-[26px] text-[clamp(1.8rem,9vw,48px)] leading-[1.14em] uppercase md:px-[70px] md:pt-[80px] lg:mb-[60px] lg:px-[100px] lg:pt-[120px] lg:text-[70px] xl:px-[130px] xl:text-[100px]">
         Sustainability
       </h1>
       {articles.map((article, i) => (

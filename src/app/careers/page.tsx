@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
+import Image from 'next/image';
 
 interface Office {
   name: string;
@@ -59,13 +60,17 @@ const jobs = [
 function OfficeCardItem({ office }: { office: Office }) {
   return (
     <div className="w-[240px] min-w-0 shrink-0 lg:w-[336px] xl:w-[400px]">
-      <img
-        loading="lazy"
-        src={office.image}
-        alt={office.name}
-        className="relative max-h-[232px] w-full pointer-events-none lg:max-h-[248px] xl:max-h-[280px]"
-      />
-      <h3 className="mt-4 flex items-center gap-[0.4cm] text-sm uppercase select-none before:-mt-[0.5px] before:inline-block before:h-2 before:w-2 before:bg-black">
+      <div className="relative max-h-[232px] w-full lg:max-h-[248px] xl:max-h-[280px]">
+        <Image
+          loading="lazy"
+          src={office.image}
+          alt={office.name}
+          fill
+          sizes="(max-width: 1023px) 240px, (max-width: 1279px) 336px, 400px"
+          className="object-cover pointer-events-none"
+        />
+      </div>
+      <h3 className="mt-4 flex items-center gap-1.5 text-sm uppercase select-none before:-mt-[0.5px] before:inline-block before:h-2 before:w-2 before:bg-black">
         {office.name}
       </h3>
     </div>
@@ -144,8 +149,8 @@ export default function CareersPage() {
 
   return (
     <div id="careers-section" className={`relative z-10 bg-white pb-[100px] ${entranceClass}`}>
-      <div className="mx-auto px-7 md:px-[70px] lg:px-[100px] xl:px-[130px]">
-        <h1 className="mb-5 -translate-x-1.5 pt-[26px] text-[55px] leading-[1.14em] uppercase md:pt-20 lg:mb-[60px] lg:pt-[120px] lg:text-[70px] xl:text-[100px]">
+      <div className="mx-auto px-4 md:px-[70px] lg:px-[100px] xl:px-[130px]">
+        <h1 className="mb-5 -translate-x-1.5 pt-[26px] text-[clamp(2rem,10vw,55px)] leading-[1.14em] uppercase md:pt-20 lg:mb-[60px] lg:pt-[120px] lg:text-[70px] xl:text-[100px]">
           Careers
         </h1>
 
@@ -191,8 +196,8 @@ export default function CareersPage() {
         </div>
 
         {/* Jobs table */}
-        <div className="w-full mb-[80px]">
-          <div className="grid grid-cols-3 gap-[2cm] text-[15px] uppercase text-black font-semibold pb-3 border-b border-[#eee] mb-2 px-2">
+        <div className="w-full mb-[80px] overflow-x-auto">
+          <div className="grid grid-cols-3 gap-4 md:gap-[2cm] text-[12px] md:text-[15px] uppercase text-black font-semibold pb-3 border-b border-[#eee] mb-2 px-2 min-w-[500px] md:min-w-0">
             <span>Title</span>
             <span>Department</span>
             <span>Location</span>
@@ -200,7 +205,7 @@ export default function CareersPage() {
           {filteredJobs.map((job, i) => (
             <div
               key={i}
-              className="grid grid-cols-3 gap-[2cm] text-sm py-3 px-2 border-b border-[#f5f5f5] hover:bg-[#fafafa] transition-colors text-[#1b1b1b] mb-[0.05cm]"
+              className="grid grid-cols-3 gap-4 md:gap-[2cm] text-sm py-3 px-2 border-b border-[#f5f5f5] hover:bg-[#fafafa] transition-colors text-[#1b1b1b] min-w-[500px] md:min-w-0"
             >
               <span className="whitespace-nowrap overflow-hidden text-ellipsis">{job.title}</span>
               <span className="text-black text-xs uppercase self-center">{job.dept}</span>
@@ -220,13 +225,15 @@ export default function CareersPage() {
 
         {/* Process image */}
         <div className="mb-[80px]">
-          <img
+          <Image
             loading="eager"
             decoding="async"
             fetchPriority="high"
             src="https://media.big.dk/2022/11/3.jpg?width=1600"
             alt="Design Process | IDESIGN"
-            className="relative w-full"
+            width={1600}
+            height={900}
+            className="relative w-full h-auto"
           />
         </div>
       </div>

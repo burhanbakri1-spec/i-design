@@ -198,8 +198,8 @@ export default function PeoplePage() {
   return (
     <>
       <div id="people-section" className={`relative z-10 bg-white pb-[100px] ${entranceClass}`}>
-        <div className="mx-auto px-7 md:px-[70px] lg:max-w-full lg:px-[100px] xl:max-w-[95%] xl:px-[130px] ml-[4cm] mr-[4cm]">
-          <h1 className="mb-5 -translate-x-1.5 pt-[26px] text-[55px] leading-[1.14em] uppercase md:pt-20 lg:mb-[60px] lg:pt-[120px] lg:text-[70px] xl:text-[100px]">
+        <div className="mx-auto px-4 md:px-[70px] lg:max-w-full lg:px-[100px] xl:max-w-[95%] xl:px-[130px] lg:ml-[4cm] lg:mr-[4cm]">
+          <h1 className="mb-5 -translate-x-1.5 pt-[26px] text-[clamp(2rem,10vw,55px)] leading-[1.14em] uppercase md:pt-20 lg:mb-[60px] lg:pt-[120px] lg:text-[70px] xl:text-[100px]">
             People
           </h1>
 
@@ -232,7 +232,21 @@ export default function PeoplePage() {
       </div>
 
       {/* Fixed side nav */}
-      <nav className="fixed flex flex-col gap-[0.5cm] text-[10px] uppercase tracking-[0.2em] z-[101]" style={{ top: '7.7cm', left: '1cm' }}>
+      {/* Mobile side nav */}
+      <nav className="lg:hidden flex gap-3 overflow-x-auto px-4 py-3 text-[9px] uppercase tracking-[0.2em] z-[101] bg-white border-b border-black/5 sticky top-14">
+        {groups.map((g) => (
+          <a
+            key={g.id}
+            href={`#${g.id}`}
+            onClick={() => setActiveNav(g.id)}
+            className={`flex items-center gap-1 whitespace-nowrap shrink-0 ${activeNav === g.id ? 'text-black' : 'text-[#949494] hover:text-black'}`}
+          >
+            {activeNav === g.id && <span className="inline-block w-1.5 h-1.5 bg-black shrink-0" />}
+            {g.label}
+          </a>
+        ))}
+      </nav>
+      <nav className="hidden lg:flex fixed flex-col gap-[19px] text-[10px] uppercase tracking-[0.2em] z-[101]" style={{ top: '291px', left: '38px' }}>
         {groups.map((g) => (
           <a
             key={g.id}
@@ -248,7 +262,7 @@ export default function PeoplePage() {
 
       {/* Fixed bottom-right avatar panel */}
       {displayPerson && (
-        <div className="fixed bottom-0 right-0 z-[101] p-8">
+        <div className="hidden lg:block fixed bottom-0 right-0 z-[101] p-8">
           <div className="w-32 h-32 overflow-hidden">
             <InitialsAvatar name={displayPerson.name} />
           </div>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scroll Scale Cards</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0f1a;
+      color: #e0e0e0;
+      padding: 2rem 1rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 1100px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #a78bfa, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #888;
+      margin-bottom: 3rem;
+      font-size: 1.05rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .card {
+      background: linear-gradient(145deg, #1e1e32, #16162a);
+      border-radius: 1.25rem;
+      padding: 2rem 1.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.45s ease;
+      transform: scale(1);
+      cursor: default;
+    }
+
+    .card.scaling {
+      transform: scale(0.92);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .card h3 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+
+    .card p {
+      color: #aaa;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .card-tag {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: rgba(167, 139, 250, 0.15);
+      color: #a78bfa;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Projects</h1>
+    <p class="subtitle">Scroll to see the scaling effect in action</p>
+    <div class="grid" id="cardGrid"></div>
+  </div>
+
+  <script>
+    const projects = [
+      { icon: '🚀', title: 'Nova Launch', desc: 'Real-time mission control dashboard for orbital launches with telemetry and predictive analytics.', tag: 'React' },
+      { icon: '🧠', title: 'Synapse AI', desc: 'Decentralized ML pipeline orchestrator supporting distributed training across edge devices.', tag: 'Python' },
+      { icon: '📊', title: 'FlowViz', desc: 'Interactive flow-based visualization engine for complex data processing graphs.', tag: 'D3.js' },
+      { icon: '🔒', title: 'CipherGate', desc: 'Zero-knowledge proof authentication system for privacy-first identity management.', tag: 'Rust' },
+      { icon: '☁️', title: 'EdgeMesh', desc: 'Mesh network overlay that auto-provisions serverless functions at the network edge.', tag: 'Go' },
+      { icon: '🎨', title: 'PixelForge', desc: 'Procedural texture generation studio with real-time GPU-accelerated previews.', tag: 'WebGL' },
+      { icon: '📡', title: 'PulseTrack', desc: 'High-frequency event streaming platform with sub-millisecond deduplication.', tag: 'Kafka' },
+      { icon: '⚡', title: 'VoltDB', desc: 'In-memory time-series database optimized for IoT sensor data at scale.', tag: 'C++' },
+      { icon: '🌿', title: 'GreenStack', desc: 'Carbon-aware scheduling and resource optimization for sustainable cloud workloads.', tag: 'K8s' },
+    ];
+
+    const grid = document.getElementById('cardGrid');
+
+    projects.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-icon">${p.icon}</div>
+        <h3>${p.title}</h3>
+        <p>${p.desc}</p>
+        <span class="card-tag">${p.tag}</span>
+      `;
+      grid.appendChild(card);
+    });
+
+    const cards = document.querySelectorAll('.card');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        } else {
+          entry.target.classList.remove('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    cards.forEach(card => observer.observe(card));
+
+    let scrollTimer = null;
+
+    const applyScale = () => {
+      document.querySelectorAll('.card.visible').forEach(card => {
+        card.classList.add('scaling');
+      });
+    };
+
+    const removeScale = () => {
+      document.querySelectorAll('.card.scaling').forEach(card => {
+        card.classList.remove('scaling');
+      });
+    };
+
+    window.addEventListener('scroll', () => {
+      applyScale();
+
+      if (scrollTimer) clearTimeout(scrollTimer);
+
+      scrollTimer = setTimeout(() => {
+        removeScale();
+      }, 150);
+    }, { passive: true });
+  </script>
+</body>
+</html>
