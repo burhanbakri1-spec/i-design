@@ -3,6 +3,7 @@
 import { useCallback, useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { getNews } from '@/lib/api/news';
 
 const items = ['News', 'Events', 'Awards', 'Lectures'];
 const currentItem = 'News';
@@ -34,9 +35,25 @@ const newsItems = [
   },
 ];
 
+type NewsListItem = (typeof newsItems)[number];
+
+function formatDate(value: string | null) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Intl.DateTimeFormat('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  })
+    .format(date)
+    .replace(/\//g, '.');
+}
+
 export default function NewsPage() {
   const router = useRouter();
   const [entranceClass, setEntranceClass] = useState('');
+  const [displayNews, setDisplayNews] = useState<NewsListItem[]>(newsItems);
 
   useEffect(() => {
     const pe = sessionStorage.getItem('page-entrance');
@@ -48,6 +65,33 @@ export default function NewsPage() {
       sessionStorage.removeItem('news-direction');
       setEntranceClass(dir === 'down' ? 'animate-slide-down' : 'animate-slide-up-from-below');
     }
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    getNews({ limit: 20 })
+      .then((response) => {
+        if (!mounted || response.data.length === 0) return;
+        setDisplayNews(
+          response.data.map((item, index) => ({
+            date: formatDate(item.publishedAt) || newsItems[index % newsItems.length].date,
+            image: item.coverImage || newsItems[index % newsItems.length].image,
+            title: item.title.toUpperCase(),
+            description: item.excerpt || '',
+            link: item.externalUrl || `/news/${item.slug}`,
+          })),
+        );
+      })
+      .catch((error) => {
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('[api fallback] news', error);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const navigateWithTransition = useCallback((href: string) => {
@@ -106,7 +150,7 @@ export default function NewsPage() {
         </h1>
 
         <div id="news-section" className={`px-4 md:px-[70px] lg:px-[100px] xl:px-[130px] max-w-[1600px] mx-auto ${entranceClass}`}>
-          {newsItems.map((item, i) => (
+          {displayNews.map((item, i) => (
             <article key={i} className="mb-16 lg:mb-[80px] grid grid-cols-1 lg:grid-cols-[68px_2fr_1fr] gap-x-10 gap-y-4">
               <span className="text-xs text-[#898989] uppercase tabular-nums self-start lg:ml-[5cm]">
                 {item.date}

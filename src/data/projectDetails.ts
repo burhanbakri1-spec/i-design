@@ -285,6 +285,14 @@ const defaultTeam = [
 
 const detailCache = new Map<string, ProjectDetail>();
 
+function getStableSize(id: string) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i += 1) {
+    hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  }
+  return (1000 + (hash % 20000)).toLocaleString('en-US');
+}
+
 export function getProjectDetail(id: string, project: { title: string; description: string; category: string; subCategory: string; images: string[] }): ProjectDetail {
   const cached = detailCache.get(id);
   if (cached) return cached;
@@ -299,7 +307,7 @@ export function getProjectDetail(id: string, project: { title: string; descripti
   const result: ProjectDetail = {
     client: clients[id] || `${project.title} Commission`,
     typology: project.subCategory || project.category,
-    size: sizes[id] || Math.floor(1000 + Math.random() * 20000).toLocaleString('en-US'),
+    size: sizes[id] || getStableSize(id),
     status: 'Completed',
     quote: quote.text,
     quoteAuthor: quote.author,

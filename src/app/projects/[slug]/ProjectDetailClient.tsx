@@ -3,14 +3,12 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { projects } from '@/data/projects';
-import { getProjectDetail } from '@/data/projectDetails';
+import { motion } from 'framer-motion';
 import type { Project } from '@/data/projects';
+import type { ProjectDetails } from '@/lib/api/types';
 import Navbar from '@/components/Navbar';
 import MobileNavbar from '@/components/MobileNavbar';
 import PortfolioGrid from '@/components/PortfolioGrid';
-import CaseStudyView from '@/components/CaseStudyView';
 
 const spring = {
   type: "spring" as const,
@@ -19,10 +17,37 @@ const spring = {
 };
 
 interface Props {
-  project: Project;
+  project: Project & { apiDetails?: ProjectDetails };
   slug: string;
   urlCat?: string;
   urlSub?: string;
+}
+
+type DetailField = {
+  client: string;
+  typology: string;
+  size: string;
+  status: string;
+};
+
+function formatProjectStatus(status?: string | null) {
+  return status ? status.replace(/_/g, ' ') : '';
+}
+
+function formatProjectSize(project?: ProjectDetails) {
+  if (!project) return '';
+  const values = [project.sizeM2, project.sizeFt2].filter((value) => value !== null && value !== undefined && value !== '');
+  return values.map((value) => String(value)).join(' / ');
+}
+
+function buildApiDetail(project: Project & { apiDetails?: ProjectDetails }): DetailField {
+  const api = project.apiDetails;
+  return {
+    client: api?.client ?? '',
+    typology: api?.categories?.map((category) => category.name).filter(Boolean).join(', ') || project.subCategory || project.category,
+    size: formatProjectSize(api),
+    status: formatProjectStatus(api?.status),
+  };
 }
 
 function ZoomOverlay({
@@ -83,26 +108,23 @@ function ShareButtons({ projectId, projectTitle }: { projectId: string; projectT
   );
 }
 
-function MetadataPanel({ detail, project, className }: { detail: NonNullable<ReturnType<typeof getProjectDetail>>; project: Project; className?: string }) {
+function MetadataPanel({ detail, project, className }: { detail: DetailField; project: Project; className?: string }) {
+  const fields = [
+    { label: 'Client', value: detail.client },
+    { label: 'Typology', value: detail.typology },
+    { label: 'Size m2/ft2', value: detail.size },
+    { label: 'Status', value: detail.status },
+  ].filter((field) => field.value);
+
   return (
     <div className={`flex flex-col flex-1 ${className}`}>
       <div className="flex flex-col gap-6">
-        <div>
-          <h4 className="text-[10px] text-[#797979] uppercase lg:text-[12px]">Client</h4>
-          <p className="text-[10px] leading-none text-black uppercase lg:text-sm lg:max-w-[180px]">{detail.client}</p>
-        </div>
-        <div>
-          <h4 className="text-[10px] text-[#797979] uppercase lg:text-[12px]">Typology</h4>
-          <p className="text-[10px] text-black uppercase lg:text-sm lg:max-w-[180px]">{detail.typology}</p>
-        </div>
-        <div>
-          <h4 className="text-[10px] text-[#797979] uppercase lg:text-[12px]">Size m2/ft2</h4>
-          <p className="text-[10px] text-black uppercase lg:text-sm lg:max-w-[180px]">{detail.size}</p>
-        </div>
-        <div>
-          <h4 className="text-[10px] text-[#797979] uppercase lg:text-[12px]">Status</h4>
-          <p className="text-[10px] text-black uppercase lg:text-sm lg:max-w-[180px]">{detail.status}</p>
-        </div>
+        {fields.map((field) => (
+          <div key={field.label}>
+            <h4 className="text-[10px] text-[#797979] uppercase lg:text-[12px]">{field.label}</h4>
+            <p className="text-[10px] leading-none text-black uppercase lg:text-sm lg:max-w-[180px]">{field.value}</p>
+          </div>
+        ))}
       </div>
       <div className="mt-auto pt-23">
         <div className="text-[11px] text-[#797979] uppercase">Share</div>
@@ -113,7 +135,11 @@ function MetadataPanel({ detail, project, className }: { detail: NonNullable<Ret
 }
 
 export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: Props) {
-  const detail = useMemo(() => getProjectDetail(slug, project), [slug, project]);
+  const detail = useMemo(() => buildApiDetail(project), [project]);
+  const apiDetails = project.apiDetails;
+  const awards = apiDetails?.awards ?? [];
+  const people = apiDetails?.people ?? [];
+  const partners = apiDetails?.partners ?? [];
   const scrollRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -143,8 +169,12 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
   }, [slug]);
 
   useEffect(() => {
-    const onScroll = () => setIsZoomedOut(window.scrollY > 50);
+    const onScroll = () => {
+      const isDesktop = window.innerWidth >= 1024;
+      setIsZoomedOut(isDesktop && window.scrollY > 50);
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
@@ -251,19 +281,22 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
   const activeSubCategory = selectedSubCategory || null;
 
   const relatedProjects = useMemo(() => {
-    // Main category: show all projects in the same category
-    if (!activeSubCategory) {
-      return projects.filter(p => p.category === activeCategory && p.id !== project.id);
-    }
-    // Subcategory: show only projects within the same subcategory
-    return projects.filter(p =>
-      p.category === activeCategory &&
-      p.subCategory === activeSubCategory &&
-      p.id !== project.id
-    );
-  }, [projects, activeCategory, activeSubCategory, project.id]);
+    const apiRelated = apiDetails?.relatedProjects ?? [];
+    return apiRelated.map((item) => ({
+      id: item.slug,
+      title: item.title,
+      category: project.category,
+      subCategory: item.categories?.[0]?.name ?? '',
+      location: [item.city, item.country].filter(Boolean).join(', ').toUpperCase(),
+      year: item.year ? String(item.year) : '',
+      description: item.shortDescription ?? item.description ?? '',
+      image: item.coverImage ?? item.media?.[0]?.url ?? '',
+      images: [item.coverImage, ...(item.media ?? []).map((media) => media.url)].filter(Boolean) as string[],
+      color: '#e0e0e0',
+    }));
+  }, [apiDetails?.relatedProjects, project.category]);
 
-  if (!detail) {
+  if (!apiDetails) {
     return (
       <div className="min-h-screen bg-white">
         <Navbar
@@ -290,35 +323,6 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
             </Link>
             <p className="text-[15px] leading-relaxed text-black/70">{project.description}</p>
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  const isCaseStudy = slug === 'sky-view';
-
-  if (isCaseStudy) {
-    return (
-      <div className="min-h-screen bg-white">
-        {showZoom && zoomData && (
-          <ZoomOverlay data={zoomData} onComplete={() => setShowZoom(false)} />
-        )}
-        <div className={showZoom ? 'invisible' : ''}>
-          <Navbar
-            selectedCategory={selectedCategory}
-            selectedSubCategory={selectedSubCategory}
-            expandedCategory={expandedCategory}
-            onCategoryClick={handleCategoryClick}
-            onSubCategoryClick={handleSubCategoryClick}
-          />
-          <MobileNavbar
-            selectedCategory={selectedCategory}
-            selectedSubCategory={selectedSubCategory}
-            expandedCategory={expandedCategory}
-            onCategoryClick={handleCategoryClick}
-            onSubCategoryClick={handleSubCategoryClick}
-          />
-          <CaseStudyView project={project} />
         </div>
       </div>
     );
@@ -358,15 +362,14 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
             (scrollRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
             (slidesContainerRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
           }}
-          className="flex flex-col overflow-x-hidden overflow-y-scroll select-none lg:flex-row lg:overflow-x-scroll lg:overflow-y-hidden cursor-grab no-scrollbar mt-[2.5cm]"
+          className="flex flex-row overflow-x-scroll overflow-y-visible select-none cursor-grab no-scrollbar mt-[2.5cm] pb-3 lg:max-h-[77vh] lg:overflow-y-hidden lg:pb-0"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
-          style={{ maxHeight: '77vh' }}
         >
           {/* ===== SLIDE 1: Hero image + project info ===== */}
-          <div className="big-project-view w-screen shrink-0 flex flex-col lg:flex-row lg:py-24 lg:px-[5vw] max-lg:mx-[5vw] max-lg:justify-center">
+          <div className="big-project-view w-max shrink-0 flex flex-col px-8 lg:w-screen lg:flex-row lg:py-24 lg:px-[5vw] max-lg:justify-center">
             {/* Desktop: text left, image right */}
             <div className="hidden lg:flex lg:flex-row lg:w-full lg:gap-16 lg:items-center">
               <motion.div
@@ -396,64 +399,88 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
                 <div className="relative overflow-hidden select-none drag-none shrink-0"
                   style={{ height: '77vh', aspectRatio: '3 / 2' }}
                 >
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="drag-none w-full h-full object-cover select-none"
-                    draggable={false}
-                  />
+                  {project.image ? (
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="drag-none w-full h-full object-cover select-none"
+                      draggable={false}
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-black/[0.03] text-[10px] uppercase tracking-[0.18em] text-black/35">
+                      No image
+                    </div>
+                  )}
                 </div>
               </motion.div>
             </div>
 
-            {/* Mobile: image + text side by side with equal height */}
-            <div className="lg:hidden w-full flex flex-row items-stretch min-h-[50vh]">
-              <div className="relative select-none drag-none flex-1 min-w-0 overflow-hidden">
-                <div className="relative w-full h-full overflow-hidden select-none drag-none">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="drag-none w-full h-full object-cover select-none"
-                    draggable={false}
-                  />
+            {/* Mobile: project details beside the main image */}
+            <div className="lg:hidden flex w-max flex-col">
+              <div className="flex h-[calc(75vw-3rem)] flex-row items-stretch gap-3">
+                <div className="w-[calc(100vw-4rem)] shrink-0">
+                <div className="relative h-full w-full select-none drag-none overflow-hidden">
+                  {project.image ? (
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="drag-none w-full h-full object-cover select-none"
+                      draggable={false}
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-black/[0.03] text-[10px] uppercase tracking-[0.18em] text-black/35">
+                      No image
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className="flex-1 flex flex-col justify-between px-4 py-2">
-                <div>
-                  <motion.div
-                    initial={{ opacity: 0, x: 18 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ ...spring, delay: 0.15 }}
-                    className="flex flex-nowrap"
-                  >
-                    <div className="size-[20px] bg-black shrink-0 flex items-center justify-end">
-                      <img src="/screenshot.png" alt="" className="h-[8px] w-[8px] object-contain" />
-                    </div>
-                    <div className="ml-[8px]">
-                      <h1 className="text-[11px] leading-[11px] font-normal break-words">
-                        {project.title}
-                      </h1>
-                      <p className="mt-[2px] text-[9px] text-[#797979] uppercase">
-                        {project.location}
-                      </p>
-                    </div>
-                  </motion.div>
+
+                <div className="mr-[1.5cm] flex h-full w-[38vw] max-w-[148px] shrink-0 flex-col overflow-hidden">
                   <motion.div
                     initial={{ opacity: 0, x: 18 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ ...spring, delay: 0.25 }}
-                    className="mt-3"
+                    className="space-y-3"
                   >
-                    <MetadataPanel detail={detail} project={project} className="text-[9px]" />
+                    {[
+                      { label: 'Client', value: detail.client },
+                      { label: 'Typology', value: detail.typology },
+                      { label: 'Size m2/ft2', value: detail.size },
+                      { label: 'Status', value: detail.status },
+                    ].filter((field) => field.value).map((field) => (
+                      <div key={field.label}>
+                        <p className="text-[9px] uppercase leading-none text-[#797979]">{field.label}</p>
+                        <p className="mt-1 text-[10px] uppercase leading-[12px] text-black">{field.value}</p>
+                      </div>
+                    ))}
                   </motion.div>
                 </div>
               </div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 18 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ ...spring, delay: 0.15 }}
+                  className="mt-3 flex flex-nowrap items-start gap-3"
+                >
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center bg-black">
+                    <img src="/screenshot.png" alt="" className="h-3 w-3 object-contain" />
+                  </div>
+                  <div className="min-w-0">
+                    <h1 className="text-sm font-normal leading-[1.1] text-black break-words">
+                      {project.title}
+                    </h1>
+                    <p className="mt-1 text-[10px] uppercase tracking-[0.25em] text-[#8E8E8E] leading-none">
+                      {project.location}
+                    </p>
+                  </div>
+                </motion.div>
             </div>
           </div>
 
           {/* ===== Remaining images as full-viewport slides ===== */}
           {project.images.slice(1).map((img, i) => (
-            <div key={i} className="big-project-view w-screen shrink-0 flex flex-col lg:flex-row lg:py-24 lg:px-[5vw] max-lg:mx-[5vw] max-lg:justify-center">
+            <div key={i} className="big-project-view w-max shrink-0 flex flex-col lg:w-screen lg:flex-row lg:py-24 lg:px-[5vw] max-lg:justify-start">
               <div className="hidden lg:flex lg:flex-row lg:w-full lg:gap-16 lg:items-center lg:justify-end">
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -476,9 +503,8 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
                   </div>
                 </motion.div>
               </div>
-              <div className="lg:hidden w-full flex flex-row items-stretch min-h-[50vh]">
-                <div className="relative select-none drag-none flex-1 min-w-0 overflow-hidden">
-                  <div className="relative w-full h-full overflow-hidden select-none drag-none">
+              <div className="lg:hidden flex h-[calc(75vw-3rem)] w-max shrink-0 gap-3">
+                <div className="relative h-[calc(75vw-3rem)] w-[calc(100vw-4rem)] shrink-0 select-none drag-none overflow-hidden">
                     <img
                       src={img}
                       alt={`${project.title} ${i + 2}`}
@@ -486,108 +512,66 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
                       draggable={false}
                     />
                   </div>
-                </div>
+                <div className="w-[38vw] max-w-[148px] shrink-0" />
               </div>
             </div>
           ))}
 
-          {/* ===== Feature / Concept slides ===== */}
-          {detail.features.map((f, i) => (
-            <div key={i} className="big-project-view w-screen shrink-0 flex flex-col lg:flex-row lg:py-24 lg:px-[5vw] max-lg:mx-[5vw] max-lg:justify-center">
-              <div className="hidden lg:flex lg:flex-row lg:w-full lg:gap-16 lg:items-center lg:justify-end">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.6 }}
-                  className="relative select-none drag-none"
-                >
-                  <div className="relative overflow-hidden select-none drag-none shrink-0"
-                    style={{ height: '77vh', aspectRatio: '3 / 2' }}
-                  >
-                    <img
-                      src={f.image}
-                      alt={f.title}
-                      className="drag-none w-full h-full object-cover select-none"
-                      draggable={false}
-                    />
-                    <div className="absolute bottom-6 left-0 right-0 mx-auto text-center max-w-[500px] px-4 select-none">
-                      <p className="text-[10px] leading-[10px] text-white">
-                        <strong className="font-normal uppercase">{f.title}</strong>
+          {(people.length > 0 || partners.length > 0 || awards.length > 0) && (
+            <div className="big-project-view relative w-screen shrink-0 bg-white flex items-center lg:px-[5vw]">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="flex flex-wrap gap-x-16 gap-y-8 max-h-[70vh] flex-col px-7 md:px-[70px] lg:px-[100px] xl:px-[130px]"
+              >
+                {people.length > 0 && (
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ ...spring }} className="min-w-[220px]">
+                    <p className="text-[11px] text-[#797979] uppercase mb-[2px]">People</p>
+                    {people.map((person) => (
+                      <p key={person.id} className="text-[13px] text-black">
+                        {person.name}{person.jobTitle ? `, ${person.jobTitle}` : ''}{person.role ? ` / ${person.role}` : ''}
                       </p>
-                      <p className="text-[10px] leading-[10px] text-white/70 mt-2">{f.text}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
-              <div className="lg:hidden w-full flex flex-row items-stretch min-h-[50vh]">
-                <div className="relative select-none drag-none flex-1 min-w-0 overflow-hidden">
-                  <div className="relative w-full h-full overflow-hidden select-none drag-none">
-                    <img
-                      src={f.image}
-                      alt={f.title}
-                      className="drag-none w-full h-full object-cover select-none"
-                      draggable={false}
-                    />
-                    <div className="absolute bottom-6 left-0 right-0 mx-auto text-center max-w-[500px] px-4 select-none">
-                      <p className="text-[10px] leading-[10px] text-white">
-                        <strong className="font-normal uppercase">{f.title}</strong>
+                    ))}
+                  </motion.div>
+                )}
+                {partners.length > 0 && (
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ ...spring, delay: 0.05 }} className="min-w-[220px]">
+                    <p className="text-[11px] text-[#797979] uppercase mb-[2px]">Partners</p>
+                    {partners.map((partner) => (
+                      <p key={partner.id} className="text-[13px] text-black">
+                        {partner.website ? (
+                          <a href={partner.website} target="_blank" rel="noreferrer" className="underline underline-offset-2">
+                            {partner.name}
+                          </a>
+                        ) : partner.name}
+                        {partner.role ? ` / ${partner.role}` : ''}
                       </p>
-                      <p className="text-[10px] leading-[10px] text-white/70 mt-2">{f.text}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                    ))}
+                  </motion.div>
+                )}
+                {awards.length > 0 && (
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ ...spring, delay: 0.1 }} className="min-w-[260px]">
+                    <p className="text-[11px] text-[#797979] uppercase mb-[2px]">Awards</p>
+                    {awards.map((award) => (
+                      <div key={award.id} className="mb-3 last:mb-0">
+                        <p className="text-[13px] text-black">
+                          {award.title}{award.organization ? `, ${award.organization}` : ''}{award.year ? `, ${award.year}` : ''}
+                        </p>
+                        {award.description && <p className="mt-1 max-w-[320px] text-[11px] leading-[1.35] text-black/60">{award.description}</p>}
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </motion.div>
             </div>
-          ))}
-
-          {/* ===== Quote slide ===== */}
-          <div className="big-project-view relative w-screen shrink-0 flex items-center justify-center lg:justify-start bg-white lg:px-[5vw]">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...spring }}
-              className="max-w-[700px] px-7 md:px-[70px] lg:px-[100px] xl:px-[130px]"
-            >
-              <p className="text-[16px] leading-[1.4] text-black/70 lg:text-[21px] lg:leading-[1.44]">
-                &ldquo;{detail.quote}&rdquo;
-              </p>
-              <p className="text-[10px] uppercase not-italic text-[#797979] mt-6 lg:mt-8">
-                {detail.quoteAuthor}
-              </p>
-            </motion.div>
-          </div>
-
-          {/* ===== Team slide ===== */}
-          <div className="big-project-view relative w-screen shrink-0 bg-white flex items-center lg:px-[5vw]">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="flex flex-wrap gap-x-16 gap-y-8 max-h-[70vh] flex-col px-7 md:px-[70px] lg:px-[100px] xl:px-[130px]"
-            >
-              {detail.team.map((section, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ ...spring, delay: i * 0.05 }}
-                  className="min-w-[200px]"
-                >
-                  <p className="text-[11px] text-[#797979] uppercase mb-[2px]">
-                    {section.label}
-                  </p>
-                  {section.members.map((m) => (
-                    <p key={m} className="text-[13px] text-black">{m}</p>
-                  ))}
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
+          )}
         </div>
+      </motion.div>
 
         {/* Related Projects */}
         {relatedProjects.length > 0 && (
-          <section className="border-t border-black/10 py-8 lg:py-16">
+          <section className="pt-0 pb-3 lg:border-t lg:border-black/10 lg:py-16">
             <PortfolioGrid
               key={project.id + (activeSubCategory || '')}
               projects={relatedProjects}
@@ -597,7 +581,6 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
             />
           </section>
         )}
-      </motion.div>
       </div>
     </div>
   );

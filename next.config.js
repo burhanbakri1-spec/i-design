@@ -4,6 +4,7 @@ const nextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'picsum.photos' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: 'media.big.dk' },
     ],
   },
   allowedDevOrigins: ['10.10.10.38'], // أضف هذا هنا

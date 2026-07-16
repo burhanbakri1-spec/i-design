@@ -53,6 +53,7 @@ export default function MobileNavbar({
 
   useEffect(() => {
     if (!menuOpen) setExpandedMobileCat(null);
+    if (!menuOpen) setShowSearch(false);
     document.body.style.overflow = menuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
@@ -66,6 +67,7 @@ export default function MobileNavbar({
   const handleSearchSelect = useCallback((link: string, name: string) => {
     setTempWord(name);
     setShowSearch(false);
+    setMenuOpen(false);
     if (tempWordTimer.current) clearTimeout(tempWordTimer.current);
     tempWordTimer.current = setTimeout(() => setTempWord(null), 2500);
     router.push(link);
@@ -93,17 +95,6 @@ export default function MobileNavbar({
 
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setShowSearch(!showSearch)}
-            className="w-10 h-10 flex items-center justify-center"
-            aria-label="Toggle search"
-          >
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-            </svg>
-          </button>
-
-          <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="w-10 h-10 flex flex-col items-center justify-center gap-1.5"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
@@ -115,22 +106,6 @@ export default function MobileNavbar({
         </div>
       </div>
 
-      {showSearch && (
-        <div className="px-4 pb-3 border-b border-black/10">
-          <div className="flex flex-wrap gap-2">
-            {words.map((w) => (
-              <button
-                key={w.name}
-                onClick={() => handleSearchSelect(w.link, w.name)}
-                className="text-[10px] tracking-[0.15em] uppercase text-[#949494] hover:text-black px-3 py-2 border border-black/10 transition-colors"
-              >
-                {w.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -139,14 +114,51 @@ export default function MobileNavbar({
             exit="closed"
             variants={menuVariants}
             transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-            className="fixed inset-0 top-14 bg-white z-40 overflow-y-auto"
+            className="fixed bottom-0 right-0 top-14 z-40 w-[min(78vw,18rem)] bg-white overflow-y-auto"
           >
-            <nav className="flex flex-col px-6 py-8">
+            <nav className="flex flex-col px-6 py-4">
+              <div className="mb-3 border-b border-black/10 pb-3">
+                <button
+                  onClick={() => setShowSearch((prev) => !prev)}
+                  className="relative w-full text-left text-sm tracking-[0.2em] uppercase text-[#949494]"
+                  aria-expanded={showSearch}
+                  aria-label="Toggle search"
+                >
+                  <svg
+                    className="absolute left-0 top-1/2 h-3.5 w-3.5 -translate-y-1/2 pointer-events-none"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                  </svg>
+                  <span className="block pl-6">
+                    {tempWord ?? words[placeholderIndex].name}
+                  </span>
+                </button>
+
+                {showSearch && (
+                  <div className="mt-2 flex flex-col">
+                    {words.map((w) => (
+                      <button
+                        key={w.name}
+                        onClick={() => handleSearchSelect(w.link, w.name)}
+                        className="w-full py-1.5 text-left text-xs tracking-[0.2em] uppercase text-[#949494] transition-colors hover:text-black"
+                      >
+                        {w.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {categories.map((cat) => {
                 const hasSub = (categorySubItems[cat]?.length ?? 0) > 0;
                 const isExpanded = expandedMobileCat === cat;
                 return (
-                  <div key={cat} className="mb-2">
+                  <div key={cat} className="mb-1">
                     <button
                       onClick={() => {
                         if (hasSub) {
@@ -155,13 +167,14 @@ export default function MobileNavbar({
                           handleNavClick(`/projects/${cat.toLowerCase()}`);
                         }
                       }}
-                      className={`w-full text-left py-4 text-sm tracking-[0.2em] uppercase border-b border-black/5 flex items-center justify-between transition-colors ${
+                      className={`w-full text-left py-2 text-sm tracking-[0.2em] uppercase flex items-center gap-3 transition-colors ${
                         selectedCategory === cat ? 'text-black font-medium' : 'text-[#666]'
                       }`}
                     >
+                      <span className="text-xs">+</span>
                       {cat}
                       {hasSub && (
-                        <span className={`text-xs transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}>
+                        <span className="hidden">
                           ↓
                         </span>
                       )}
@@ -174,14 +187,14 @@ export default function MobileNavbar({
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                       >
-                        <div className="flex flex-col pl-4 py-2">
+                        <div className="flex flex-col pl-4 py-1">
                           {categorySubItems[cat]
                             .filter((sub) => sub)
                             .map((sub) => (
                               <button
                                 key={sub}
                                 onClick={() => handleNavClick(`/projects/${cat.toLowerCase()}/${sub.toLowerCase()}`)}
-                                className={`text-left py-3 text-xs tracking-[0.2em] uppercase text-[#666] hover:text-black transition-colors`}
+                                className={`text-left py-1.5 text-xs tracking-[0.2em] uppercase text-[#666] hover:text-black transition-colors`}
                               >
                                 {sub}
                               </button>
@@ -193,32 +206,6 @@ export default function MobileNavbar({
                 );
               })}
 
-              <div className="mt-4 space-y-1 border-t border-black/10 pt-6">
-                {[
-                  { label: 'NEWS', href: '/news' },
-                  { label: 'ABOUT', href: '/about' },
-                  { label: 'SUSTAINABILITY', href: '/sustainability' },
-                  { label: 'PEOPLE', href: '/people' },
-                  { label: 'CAREERS', href: '/careers' },
-                ].map((item) => (
-                  <button
-                    key={item.label}
-                    onClick={() => handleNavClick(item.href)}
-                    className="block w-full text-left py-4 text-sm tracking-[0.2em] uppercase text-[#666] hover:text-black transition-colors border-b border-black/5"
-                  >
-                    {item.label}
-                  </button>
-                ))}
-                <button
-                  onClick={() => {
-                    setMenuOpen(false);
-                    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
-                  }}
-                  className="block w-full text-left py-4 text-sm tracking-[0.2em] uppercase text-[#666] hover:text-black transition-colors"
-                >
-                  CONTACT
-                </button>
-              </div>
             </nav>
           </motion.div>
         )}

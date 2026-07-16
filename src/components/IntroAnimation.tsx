@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 const lines = [
   { x1: 45, y1: 10, x2: 45, y2: 90, sw: 18 },
@@ -38,13 +38,17 @@ const menuItems = [
 ];
 
 export default function IntroAnimation() {
-  const [phase, setPhase] = useState<'show' | 'screenHidden'>('show');
-  const [blackScreenLift, setBlackScreenLift] = useState(false);
-  const [logoStart, setLogoStart] = useState(false);
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith('/admin');
+  const [phase, setPhase] = useState<'show' | 'screenHidden'>(isAdmin ? 'screenHidden' : 'show');
+  const [blackScreenLift, setBlackScreenLift] = useState(isAdmin ? true : false);
+  const [logoStart, setLogoStart] = useState(isAdmin ? true : false);
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuEntered, setMenuEntered] = useState(false);
   const [logoHovered, setLogoHovered] = useState(false);
   const router = useRouter();
+
+  if (isAdmin) return null;
 
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -113,7 +117,7 @@ export default function IntroAnimation() {
               <polyline points="295,18 295,90 350,90 350,50 328,50" strokeWidth={5} strokeLinecap="square" strokeLinejoin="miter" className="transition-[stroke] duration-[5000ms]" stroke={logoStart ? 'black' : '#999'} />
               <polyline points="365,90 365,78 377,78 377,66 389,66 389,54 401,54 401,42 413,42 413,30 418,30" strokeWidth={5} strokeLinecap="square" strokeLinejoin="miter" className="transition-[stroke] duration-[5000ms]" stroke={logoStart ? 'black' : '#999'} />
             </svg>
-            <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 opacity-0 ${menuVisible ? 'opacity-100' : ''} ${!menuVisible && logoHovered ? 'opacity-100' : ''} pointer-events-none lg:-translate-x-[4cm]`}>
+            <div className={`absolute inset-0 flex items-center justify-start transition-opacity duration-300 opacity-0 ${menuVisible ? 'opacity-100' : ''} ${!menuVisible && logoHovered ? 'opacity-100' : ''} pointer-events-none`}>
               <Image
                 src="/hamburger.png"
                 alt=""

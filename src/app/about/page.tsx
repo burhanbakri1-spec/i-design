@@ -83,7 +83,7 @@ function CardItem({ card }: { card: Card }) {
   const [expanded, setExpanded] = useState(false);
   return (
     <div className="w-[300px] min-w-0 shrink-0 lg:w-[420px] xl:w-[500px]">
-      <div className="relative max-h-[290px] w-full lg:max-h-[310px] xl:max-h-[350px]">
+      <div className="relative h-[290px] max-h-[290px] w-full lg:h-[310px] lg:max-h-[310px] xl:h-[350px] xl:max-h-[350px]">
         <Image
           loading="lazy"
           src={card.image}

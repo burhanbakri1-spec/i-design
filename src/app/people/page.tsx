@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { getPeople } from '@/lib/api/people';
 
 interface Person {
   name: string;
@@ -153,6 +154,7 @@ function PersonRow({ person, groupId, onSelect, isSelected, onHover, onLeave, ex
 
 export default function PeoplePage() {
   const [entranceClass, setEntranceClass] = useState('');
+  const [displayGroups, setDisplayGroups] = useState<Group[]>(groups);
 
   useEffect(() => {
     const pe = sessionStorage.getItem('page-entrance');
@@ -160,6 +162,36 @@ export default function PeoplePage() {
     if (pe === 'slide-in-left') {
       setEntranceClass('animate-slide-in-left');
     }
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    getPeople()
+      .then((response) => {
+        if (!mounted || response.data.length === 0) return;
+        const apiPeople: Person[] = response.data.map((person) => ({
+          name: person.name,
+          title: person.jobTitle || '',
+          office: person.office?.city || '',
+          bio: person.biography || '',
+        }));
+
+        setDisplayGroups((currentGroups) =>
+          currentGroups.map((group) =>
+            group.id === 'partners' ? { ...group, people: apiPeople } : group,
+          ),
+        );
+      })
+      .catch((error) => {
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('[api fallback] people', error);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const [activeNav, setActiveNav] = useState<string | null>(null);
@@ -172,7 +204,7 @@ export default function PeoplePage() {
       for (const entry of entries) {
         if (entry.isIntersecting) {
           if (entry.target.id === 'sentinel') {
-            setActiveNav(groups[groups.length - 1].id);
+            setActiveNav(displayGroups[displayGroups.length - 1].id);
           } else {
             setActiveNav(entry.target.id);
           }
@@ -187,7 +219,7 @@ export default function PeoplePage() {
     if (sentinel) observer.observe(sentinel);
 
     return () => observer.disconnect();
-  }, [groups.length]);
+  }, [displayGroups]);
 
   const handleSelect = (person: Person, groupId: string) => {
     setSelectedPerson({ person, groupId });
@@ -204,7 +236,7 @@ export default function PeoplePage() {
           </h1>
 
           {/* Sections */}
-          {groups.map((group) => (
+          {displayGroups.map((group) => (
             <section
               key={group.id}
               id={group.id}
@@ -234,7 +266,7 @@ export default function PeoplePage() {
       {/* Fixed side nav */}
       {/* Mobile side nav */}
       <nav className="lg:hidden flex gap-3 overflow-x-auto px-4 py-3 text-[9px] uppercase tracking-[0.2em] z-[101] bg-white border-b border-black/5 sticky top-14">
-        {groups.map((g) => (
+        {displayGroups.map((g) => (
           <a
             key={g.id}
             href={`#${g.id}`}
@@ -247,7 +279,7 @@ export default function PeoplePage() {
         ))}
       </nav>
       <nav className="hidden lg:flex fixed flex-col gap-[19px] text-[10px] uppercase tracking-[0.2em] z-[101]" style={{ top: '291px', left: '38px' }}>
-        {groups.map((g) => (
+        {displayGroups.map((g) => (
           <a
             key={g.id}
             href={`#${g.id}`}

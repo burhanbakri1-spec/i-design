@@ -1,0 +1,287 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  EDITOR
+}
+
+enum ProjectStatus {
+  CONCEPT
+  DESIGN
+  UNDER_CONSTRUCTION
+  COMPLETED
+  ON_HOLD
+  CANCELLED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  PLAN
+  DOCUMENT
+}
+
+enum ContactStatus {
+  NEW
+  READ
+  REPLIED
+  ARCHIVED
+}
+
+model User {
+  id                String    @id @default(cuid())
+  name              String
+  email             String    @unique
+  password          String
+  role              UserRole  @default(EDITOR)
+  isActive          Boolean   @default(true)
+  refreshTokenHash  String?
+  tokenVersion      Int       @default(0)
+  lastLoginAt       DateTime?
+  passwordChangedAt DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([role])
+  @@index([isActive])
+}
+
+model Project {
+  id               String            @id @default(cuid())
+  title            String
+  slug             String            @unique
+  shortDescription String?
+  description      String?           @db.Text
+  city             String?
+  country          String?
+  year             Int?
+  client           String?
+  status           ProjectStatus     @default(CONCEPT)
+  sizeM2           Decimal?          @db.Decimal(14, 2)
+  sizeFt2          Decimal?          @db.Decimal(14, 2)
+  latitude         Decimal?          @db.Decimal(10, 7)
+  longitude        Decimal?          @db.Decimal(10, 7)
+  coverImage       String?
+  featured         Boolean           @default(false)
+  published        Boolean           @default(false)
+  publishedAt      DateTime?
+  seoTitle         String?
+  seoDescription   String?
+  deletedAt        DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  categories       ProjectCategory[]
+  media            ProjectMedia[]
+  people           ProjectPerson[]
+  awards           Award[]
+  partners         ProjectPartner[]
+
+  @@index([status])
+  @@index([country])
+  @@index([city])
+  @@index([year])
+  @@index([featured])
+  @@index([published])
+  @@index([publishedAt])
+  @@index([deletedAt])
+  @@index([createdAt])
+}
+
+model Category {
+  id          String            @id @default(cuid())
+  name        String
+  slug        String            @unique
+  description String?           @db.Text
+  parentId    String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  parent      Category?         @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Category[]        @relation("CategoryHierarchy")
+  projects    ProjectCategory[]
+
+  @@index([parentId])
+}
+
+model ProjectCategory {
+  projectId  String
+  categoryId String
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@id([projectId, categoryId])
+  @@index([categoryId])
+  @@index([projectId, sortOrder])
+}
+
+model ProjectMedia {
+  id        String    @id @default(cuid())
+  projectId String
+  url       String
+  publicId  String?
+  mediaType MediaType @default(IMAGE)
+  caption   String?
+  altText   String?
+  width     Int?
+  height    Int?
+  sortOrder Int       @default(0)
+  isCover   Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, sortOrder])
+  @@index([mediaType])
+  @@index([isCover])
+}
+
+model Office {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  city        String
+  country     String
+  address     String?
+  phone       String?
+  email       String?
+  latitude    Decimal? @db.Decimal(10, 7)
+  longitude   Decimal? @db.Decimal(10, 7)
+  description String?  @db.Text
+  image       String?
+  published   Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  people      Person[]
+
+  @@index([country])
+  @@index([city])
+  @@index([published])
+  @@index([sortOrder])
+}
+
+model Person {
+  id        String          @id @default(cuid())
+  name      String
+  slug      String          @unique
+  jobTitle  String?
+  biography String?         @db.Text
+  email     String?
+  phone     String?
+  image     String?
+  officeId  String?
+  published Boolean         @default(false)
+  sortOrder Int             @default(0)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  office    Office?         @relation(fields: [officeId], references: [id], onDelete: SetNull)
+  projects  ProjectPerson[]
+
+  @@index([officeId])
+  @@index([published])
+  @@index([sortOrder])
+}
+
+model ProjectPerson {
+  projectId String
+  personId  String
+  role      String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  person    Person   @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, personId])
+  @@index([personId])
+  @@index([projectId, sortOrder])
+}
+
+model News {
+  id             String    @id @default(cuid())
+  title          String
+  slug           String    @unique
+  excerpt        String?
+  content        String?   @db.Text
+  coverImage     String?
+  externalUrl    String?
+  published      Boolean   @default(false)
+  featured       Boolean   @default(false)
+  publishedAt    DateTime?
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([published])
+  @@index([featured])
+  @@index([publishedAt])
+  @@index([createdAt])
+}
+
+model Award {
+  id           String   @id @default(cuid())
+  title        String
+  organization String?
+  year         Int?
+  projectId    String
+  description  String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([year])
+}
+
+model Partner {
+  id          String           @id @default(cuid())
+  name        String
+  slug        String           @unique
+  website     String?
+  logo        String?
+  description String?          @db.Text
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  projects    ProjectPartner[]
+}
+
+model ProjectPartner {
+  projectId String
+  partnerId String
+  role      String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  partner   Partner  @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, partnerId])
+  @@index([partnerId])
+  @@index([projectId, sortOrder])
+}
+
+model ContactMessage {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String        @db.Text
+  status    ContactStatus @default(NEW)
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([email])
+}
