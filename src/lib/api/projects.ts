@@ -1,4 +1,4 @@
-import type { Project } from '@/data/projects';
+import { projects as localProjects, type Project } from '@/data/projects';
 import { ApiError, apiFetch } from './client';
 import type { PaginatedData, ProjectDetails, ProjectListItem } from './types';
 
@@ -96,6 +96,8 @@ export async function getFeaturedProjects(fallbackProjects: Project[] = []) {
 }
 
 export async function getProjectBySlug(slug: string) {
+  const localProject = localProjects.find((project) => project.id === slug) ?? null;
+
   try {
     const result = await apiFetch<ProjectDetails>(`/projects/${slug}`, {
       next: { revalidate: 60, tags: ['projects', `project:${slug}`] },
@@ -103,6 +105,7 @@ export async function getProjectBySlug(slug: string) {
     return { ...toLocalProject(result), apiDetails: result } satisfies ApiBackedProject;
   } catch (error) {
     logFallback(`project:${slug}`, error);
+    if (localProject) return localProject satisfies ApiBackedProject;
     if (error instanceof ApiError && error.status === 404) return null;
     throw error;
   }

@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import type { Project } from '@/data/projects';
+import { projects as localProjects, type Project } from '@/data/projects';
+import { getProjectDetail } from '@/data/projectDetails';
 import type { ProjectDetails } from '@/lib/api/types';
 import Navbar from '@/components/Navbar';
 import MobileNavbar from '@/components/MobileNavbar';
@@ -42,11 +42,21 @@ function formatProjectSize(project?: ProjectDetails) {
 
 function buildApiDetail(project: Project & { apiDetails?: ProjectDetails }): DetailField {
   const api = project.apiDetails;
+  if (api) {
+    return {
+      client: api.client ?? '',
+      typology: api.categories?.map((category) => category.name).filter(Boolean).join(', ') || project.subCategory || project.category,
+      size: formatProjectSize(api),
+      status: formatProjectStatus(api.status),
+    };
+  }
+
+  const local = getProjectDetail(project.id, project);
   return {
-    client: api?.client ?? '',
-    typology: api?.categories?.map((category) => category.name).filter(Boolean).join(', ') || project.subCategory || project.category,
-    size: formatProjectSize(api),
-    status: formatProjectStatus(api?.status),
+    client: local.client,
+    typology: local.typology,
+    size: local.size,
+    status: local.status,
   };
 }
 
@@ -282,51 +292,25 @@ export default function ProjectDetailClient({ project, slug, urlCat, urlSub }: P
 
   const relatedProjects = useMemo(() => {
     const apiRelated = apiDetails?.relatedProjects ?? [];
-    return apiRelated.map((item) => ({
-      id: item.slug,
-      title: item.title,
-      category: project.category,
-      subCategory: item.categories?.[0]?.name ?? '',
-      location: [item.city, item.country].filter(Boolean).join(', ').toUpperCase(),
-      year: item.year ? String(item.year) : '',
-      description: item.shortDescription ?? item.description ?? '',
-      image: item.coverImage ?? item.media?.[0]?.url ?? '',
-      images: [item.coverImage, ...(item.media ?? []).map((media) => media.url)].filter(Boolean) as string[],
-      color: '#e0e0e0',
-    }));
-  }, [apiDetails?.relatedProjects, project.category]);
+    if (apiRelated.length > 0) {
+      return apiRelated.map((item) => ({
+        id: item.slug,
+        title: item.title,
+        category: project.category,
+        subCategory: item.categories?.[0]?.name ?? '',
+        location: [item.city, item.country].filter(Boolean).join(', ').toUpperCase(),
+        year: item.year ? String(item.year) : '',
+        description: item.shortDescription ?? item.description ?? '',
+        image: item.coverImage ?? item.media?.[0]?.url ?? '',
+        images: [item.coverImage, ...(item.media ?? []).map((media) => media.url)].filter(Boolean) as string[],
+        color: '#e0e0e0',
+      }));
+    }
 
-  if (!apiDetails) {
-    return (
-      <div className="min-h-screen bg-white">
-        <Navbar
-          selectedCategory={selectedCategory}
-          selectedSubCategory={selectedSubCategory}
-          expandedCategory={expandedCategory}
-          onCategoryClick={handleCategoryClick}
-          onSubCategoryClick={handleSubCategoryClick}
-        />
-        <MobileNavbar
-          selectedCategory={selectedCategory}
-          selectedSubCategory={selectedSubCategory}
-          expandedCategory={expandedCategory}
-          onCategoryClick={handleCategoryClick}
-          onSubCategoryClick={handleSubCategoryClick}
-        />
-        <div className="h-[calc(100vh-44px)] flex items-center justify-center px-4 md:px-[70px] lg:px-[100px] xl:px-[130px]">
-          <div className="max-w-[700px]">
-            <Link
-              href="/"
-              className="inline-block text-[11px] uppercase tracking-[0.2em] text-black/40 hover:text-black transition-colors mb-6"
-            >
-              ← Back to all projects
-            </Link>
-            <p className="text-[15px] leading-relaxed text-black/70">{project.description}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+    return localProjects
+      .filter((item) => item.category === project.category && item.id !== project.id)
+      .slice(0, 8);
+  }, [apiDetails?.relatedProjects, project.category, project.id]);
 
   return (
     <div className="min-h-screen bg-white">
