@@ -44,12 +44,15 @@ function CategoryPageContent({ category, subCategory, projectsData = emptyProjec
     const apiCategory = category === 'INTERIORS' ? 'interior' : category === 'PRODUCTS' ? 'product-design' : category.toLowerCase();
 
     setError('');
-    getProjects({ category: apiCategory, limit: 100 }, [])
+    getProjects({ category: apiCategory, limit: 100 }, projectsData)
       .then((items) => {
-        if (mounted) setDisplayProjects(items);
+        if (mounted) setDisplayProjects(items.length > 0 ? items : projectsData);
       })
       .catch((error) => {
-        if (mounted) setError('Unable to load projects.');
+        if (mounted) {
+          setDisplayProjects(projectsData);
+          if (projectsData.length === 0) setError('Unable to load projects.');
+        }
         if (process.env.NODE_ENV !== 'production') {
           console.warn('[api error] category projects', error);
         }
@@ -58,7 +61,7 @@ function CategoryPageContent({ category, subCategory, projectsData = emptyProjec
     return () => {
       mounted = false;
     };
-  }, [category]);
+  }, [category, projectsData]);
 
   useEffect(() => {
     if (subCategory) {

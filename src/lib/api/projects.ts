@@ -73,7 +73,7 @@ export async function getProjects(query: ProjectQuery = {}, fallbackProjects: Pr
       next: { revalidate: 60, tags: ['projects'] },
     });
     const mapped = result.data.map(toLocalProject);
-    return mapped;
+    return mapped.length > 0 ? mapped : fallbackProjects;
   } catch (error) {
     logFallback('projects', error);
     if (fallbackProjects.length > 0) return fallbackProjects;
@@ -87,7 +87,7 @@ export async function getFeaturedProjects(fallbackProjects: Project[] = []) {
       next: { revalidate: 60, tags: ['projects'] },
     });
     const mapped = result.map(toLocalProject);
-    return mapped;
+    return mapped.length > 0 ? mapped : fallbackProjects;
   } catch (error) {
     logFallback('featured projects', error);
     if (fallbackProjects.length > 0) return fallbackProjects;
