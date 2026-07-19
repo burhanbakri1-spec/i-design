@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useCallback, useEffect, Suspense } from 'react';
+import { useState, useCallback, useEffect, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { categorySubItems } from '@/data/projects';
+import { categorySubItems, projects as localProjects } from '@/data/projects';
 import type { Project } from '@/data/projects';
 import Navbar from '@/components/Navbar';
 import MobileNavbar from '@/components/MobileNavbar';
@@ -15,12 +15,15 @@ interface Props {
   projectsData?: Project[];
 }
 
-const emptyProjects: Project[] = [];
-
-function CategoryPageContent({ category, subCategory, projectsData = emptyProjects }: Props) {
+function CategoryPageContent({ category, subCategory, projectsData }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [displayProjects, setDisplayProjects] = useState<Project[]>(projectsData);
+  const localFallback = useMemo(
+    () => localProjects.filter((project) => project.category === category),
+    [category],
+  );
+  const seedProjects = projectsData && projectsData.length > 0 ? projectsData : localFallback;
+  const [displayProjects, setDisplayProjects] = useState<Project[]>(seedProjects);
   const [error, setError] = useState('');
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(
     subCategory || null
@@ -29,29 +32,29 @@ function CategoryPageContent({ category, subCategory, projectsData = emptyProjec
   useEffect(() => {
     setDisplayProjects((currentProjects) => {
       if (
-        currentProjects.length === projectsData.length &&
-        currentProjects.every((project, index) => project.id === projectsData[index]?.id)
+        currentProjects.length === seedProjects.length &&
+        currentProjects.every((project, index) => project.id === seedProjects[index]?.id)
       ) {
         return currentProjects;
       }
 
-      return projectsData;
+      return seedProjects;
     });
-  }, [projectsData]);
+  }, [seedProjects]);
 
   useEffect(() => {
     let mounted = true;
     const apiCategory = category === 'INTERIORS' ? 'interior' : category === 'PRODUCTS' ? 'product-design' : category.toLowerCase();
 
     setError('');
-    getProjects({ category: apiCategory, limit: 100 }, projectsData)
+    getProjects({ category: apiCategory, limit: 100 }, seedProjects)
       .then((items) => {
-        if (mounted) setDisplayProjects(items.length > 0 ? items : projectsData);
+        if (mounted) setDisplayProjects(items.length > 0 ? items : seedProjects);
       })
       .catch((error) => {
         if (mounted) {
-          setDisplayProjects(projectsData);
-          if (projectsData.length === 0) setError('Unable to load projects.');
+          setDisplayProjects(seedProjects);
+          if (seedProjects.length === 0) setError('Unable to load projects.');
         }
         if (process.env.NODE_ENV !== 'production') {
           console.warn('[api error] category projects', error);
@@ -61,7 +64,7 @@ function CategoryPageContent({ category, subCategory, projectsData = emptyProjec
     return () => {
       mounted = false;
     };
-  }, [category, projectsData]);
+  }, [category, seedProjects]);
 
   useEffect(() => {
     if (subCategory) {
