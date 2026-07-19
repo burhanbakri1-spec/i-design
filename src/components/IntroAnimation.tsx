@@ -40,17 +40,19 @@ const menuItems = [
 export default function IntroAnimation() {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith('/admin');
-  const [phase, setPhase] = useState<'show' | 'screenHidden'>(isAdmin ? 'screenHidden' : 'show');
-  const [blackScreenLift, setBlackScreenLift] = useState(isAdmin ? true : false);
-  const [logoStart, setLogoStart] = useState(isAdmin ? true : false);
+  const isHome = pathname === '/';
+  // Full splash only on the homepage; other routes keep the corner logo/menu without the black overlay.
+  const [phase, setPhase] = useState<'show' | 'screenHidden'>(isHome ? 'show' : 'screenHidden');
+  const [blackScreenLift, setBlackScreenLift] = useState(!isHome);
+  const [logoStart, setLogoStart] = useState(!isHome);
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuEntered, setMenuEntered] = useState(false);
   const [logoHovered, setLogoHovered] = useState(false);
   const router = useRouter();
 
-  if (isAdmin) return null;
-
   useEffect(() => {
+    if (isAdmin || !isHome) return;
+
     requestAnimationFrame(() => {
       setBlackScreenLift(true);
       setLogoStart(true);
@@ -62,7 +64,9 @@ export default function IntroAnimation() {
     return () => {
       clearTimeout(hideTimer);
     };
-  }, []);
+  }, [isAdmin, isHome]);
+
+  if (isAdmin) return null;
 
   useEffect(() => {
     if (!menuVisible) return;
